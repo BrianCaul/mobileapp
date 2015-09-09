@@ -1,0 +1,30 @@
+<ion-view title="Intro" ng-controller="Intro">
+	<ion-content padding="false">
+		<div id="intro-slide-box" show-pager="false">
+				<div class="row">
+					<div class="text-center col col-center">
+						<h4 class="light">Overlord Login</h4>
+						<div class="list">
+							<label class="item item-input">
+								<span class="input-label">Username</span>
+								<input ng-model="cred.username" type="text">
+							</label>
+							<label class="item item-input">
+								<span class="input-label">Password</span>
+								<input ng-model="cred.password" type="password">
+							</label>
+						</div>
+						<div class="padding-bottom">
+							<button ng-click="login()" class="button button-balanced icon-right ion-ios7-arrow-right">
+								<span class="font-family-default">Log In</span>
+							</button>
+						</div>
+						<div class="text-center">
+							<p><button ng-click="showRegister()" class="button button-clear button-light">Need an account?</button></p>
+						</div>
+					</div>
+					<div style="height:100vh;"></div>
+				</div>
+		</div>
+	</ion-content>
+</ion-view>

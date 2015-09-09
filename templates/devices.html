@@ -1,0 +1,44 @@
+<ion-view title="Devices">
+	<ion-content class="padding-vertical">
+		<div class="padding-horizontal">	
+			<h4>Wi-Fi Camera Snapshots</h4>
+		</div>
+		<wrap-owlcarousel
+			class="owl-carousel padding"
+			data-options="{
+				autoPlay: false,
+				slideSpeed : 300,
+				paginationSpeed : 400,
+				items: 3,
+				itemsDesktop: [1199,3],
+				itemsTablet: [768,2]                                                                                  ,
+				itemsMobile: [479,1],
+				navigation: true,
+			}">
+			<div class="owl-item">
+				<img src="img/room1.jpg"/>
+			</div>
+			<div class="owl-item">
+				<img src="img/room2.jpg"/>
+			</div>
+			<div class="owl-item">
+				<img src="img/room1.jpg"/>
+			</div>
+			<div class="owl-item">
+				<img src="img/room2.jpg"/>
+			</div>
+		</wrap-owlcarousel>
+		<div ng-repeat="device in devices">
+			<div class="col-lg-50">
+				<div class="item item-icon-left" on-tap="deviceTap('router.device', device)">
+					<i class="icon" ng-class="device.icon"></i>
+					{{ device.name }}
+					<span class="item-note" ng-class="device.color">
+					{{ device.status }}
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="clearfix"></div>
+	</ion-content>
+</ion-view>
