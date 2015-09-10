@@ -205,7 +205,7 @@ angular.module('iot', ['ionic','chart.js'])
 		$ionicLoading.show({
 		  template: 'Logging in...'
 		});
-		$http.post('http://localhost:8082/Overlord/rest/users/signin?uname='+ $scope.cred.username +'&pass='+$scope.cred.password).
+		$http.post('http://overlord.elasticbeanstalk.com/rest/users/signin?uname='+ $scope.cred.username +'&pass='+$scope.cred.password).
 		    success(function(data, status, headers, config) {
 		      $scope.user = data;
 		      if($scope.user ==='' || $scope.user ==undefined || $scope.user.id===0){
