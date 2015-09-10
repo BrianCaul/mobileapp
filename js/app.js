@@ -40,19 +40,27 @@ angular.module('iot', ['ionic','chart.js'])
         }
       }
     })
-	.state('router.devices', {
-      url: "/devices",
+	.state('router.dashboard.charts', {
+      url: "/charts",
       views: {
-        'menuContent' :{
-          templateUrl: "templates/devices.html"
+        'charts-tab' :{
+          templateUrl: "templates/charts.html"
         }
       }
     })
-	.state('router.device', {
-      url: "/device",
+	.state('router.positions', {
+      url: "/positions",
       views: {
         'menuContent' :{
-          templateUrl: "templates/device-single.html"
+          templateUrl: "templates/positions.html"
+        }
+      }
+    })
+	.state('router.position', {
+      url: "/position",
+      views: {
+        'menuContent' :{
+          templateUrl: "templates/position-single.html"
         }
       }
     })
@@ -69,14 +77,6 @@ angular.module('iot', ['ionic','chart.js'])
       views: {
         'menuContent' :{
           templateUrl: "templates/users.html"
-        }
-      }
-    })
-	.state('router.charts', {
-      url: "/charts",
-      views: {
-        'menuContent' :{
-          templateUrl: "templates/charts.html"
         }
       }
     })
@@ -128,45 +128,53 @@ angular.module('iot', ['ionic','chart.js'])
 })
 .controller('MainCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout) {
 	$scope.users = [
-		{ username: 'Admin', email: 'admin@test.domain', location: true, id: 'admin', avatar: 'img/men.jpg', enabled: 'true', lastLogin: 'Online' },
-		{ username: 'Stacy S', email: 'stacy@test.domain', location: true, id: 'stacy', avatar: 'img/girl.jpg', enabled: 'true', lastLogin: 'Last login: 01/09/2014' },
-		{ username: 'Mom', email: 'mom@test.domain', location: false, id: 'mom', avatar: 'img/noavatar.png', enabled: 'false', lastLogin: 'Last login: never' },
+		{ username: 'Admin', email: 'admin@test.domain', location: true, id: 'admin', avatar: 'img/men.jpg', enabled: 'true', lastLogin: 'Online', userType: 'Event Manager' },
+		{ username: 'David', email: 'david@test.domain', location: true, id: 'david', avatar: 'img/girl.jpg', enabled: 'true', lastLogin: 'Last login: 01/09/2014' , userType: 'Supervisor' },
+		{ username: 'Paul', email: 'paul@test.domain', location: false, id: 'paul', avatar: 'img/noavatar.png', enabled: 'false', lastLogin: 'Last login: never' , userType: 'Attendant' },
+		{ username: 'Mary', email: 'mary@test.domain', location: false, id: 'mary', avatar: 'img/noavatar.png', enabled: 'true', lastLogin: 'Last login: never' , userType: 'Attendant' },
 	];
-	$scope.device = { id: null, name: 'No Device', icon: 'ion-ios7-help-empty', status: 'Offline' },
-	$scope.devices = [
-		{ id: '1', name: 'Thermostat (bedroom)', icon: 'ion-thermometer', status: 'Away', featured: true, userSelect: "stacy", actionSelect: "3" },
-		{ id: '2', name: 'Coffee Machine', icon: 'ion-coffee', status: 'Finished', color: 'balanced', featured: true, userSelect: "mom", actionSelect: null },
-		{ id: '3', name: 'Smoke Sensor', icon: 'ion-no-smoking', status: 'Idle', color: 'assertive', featured: true, userSelect: "admin", actionSelect: null },
-		{ id: '4', name: 'Garage', icon: 'ion-model-s', status: 'Car Inside', featured: true, userSelect: "admin", actionSelect: "6" },
-		{ id: '5', name: 'House Security', icon: 'ion-locked', status: 'Unarmed', color: 'assertive', featured: true, userSelect: "admin", actionSelect: "7"},
-		{ id: '6', name: 'Fan (WC)', icon: 'ion-load-b', status: 'Working', color: 'balanced', userSelect: "admin", actionSelect: null },
-		{ id: '7', name: 'Desktop PC', icon: 'ion-social-windows', status: 'Online', color: 'balanced', featured: true, userSelect: "admin", actionSelect: null },
-		{ id: '8', name: 'Stacy\'s Laptop', icon: 'ion-social-apple', status: 'Online', color: 'balanced', userSelect: "stacy", actionSelect: null },
-		{ id: '9', name: 'Media Center (torrent downloader)', icon: 'ion-social-tux', status: 'Online', color: 'balanced', userSelect: "admin", actionSelect: null },
-		{ id: '10', name: 'Unknow Smartphone', icon: 'ion-social-android', status: 'Offline', color: 'assertive', userSelect: "admin", actionSelect: null },
-		{ id: '11', name: 'Room 1 Lights', icon: 'ion-ios7-lightbulb', userSelect: "admin", actionSelect: "1" },
-		{ id: '12', name: 'Room 2 Lights', icon: 'ion-ios7-lightbulb', userSelect: "admin", actionSelect: "1" },
-		{ id: '13', name: 'Room 3 Lights', icon: 'ion-ios7-lightbulb', userSelect: "admin", actionSelect: "1" },
-		{ id: '14', name: 'Lawn Lights', icon: 'ion-ios7-lightbulb', userSelect: "admin", actionSelect: "5" },
+		
+	$scope.position = { id: null, name: 'No Position', icon: 'ion-ios7-help-empty', status: 'Offline' },
+	$scope.positions = [
+		{ id: '1', name: 'Thermostat (bedroom)', icon: 'ion-thermometer', status: 'Away', featured: true, userSelect: "stacy", entryCount: "3" , exitCount :"0" },
+		{ id: '2', name: 'Coffee Machine', icon: 'ion-coffee', status: 'Finished', color: 'balanced', featured: true, userSelect: "mom", entryCount: null, exitCount :"0"  },
+		{ id: '3', name: 'Smoke Sensor', icon: 'ion-no-smoking', status: 'Idle', color: 'assertive', featured: true, userSelect: "admin", entryCount: null, exitCount :"0"  },
 	];
 	$scope.events = [
 		{ id: '1', name: 'Event 1', icon: 'ion-log-in', note: 'Test event 1', featured: true },
 		{ id: '2', name: 'Event 2', icon: 'ion-log-in', note: 'Test event 2 description', featured: true },
 	];
-	$scope.actions = [
-		{ id: '1', name: 'Lawn Lights Brightness', type: "range", value: '68', minValue : "0", maxValue : "100", units: "%", iconBefore: 'ion-ios7-lightbulb-outline', iconAfter: 'ion-ios7-lightbulb', deviceSelect : "", script: "", featured: true },
-		{ id: '2', name: 'Smart Grid Power', type: "range", value: '24', minValue : "0", maxValue : "100", units: "%", iconBefore: 'ion-ios7-bolt-outline', iconAfter: 'ion-ios7-bolt', deviceSelect : "", script: "", featured: false },
-		{ id: '3', name: 'Temperature', type: "range", value: '40', minValue : "-20", maxValue : "80", units: "°", iconBefore: 'ion-ios7-snowy', iconAfter: 'ion-ios7-sunny-outline', deviceSelect : "", script: "", featured: true },
-		{ id: '4', name: 'Popcorn Time', type: "toggle", featured: false },
-		{ id: '5', name: 'Good Night', type: "toggle", featured: true },
-		{ id: '6', name: 'Open Garage Doors', type: "toggle", featured: false },
-		{ id: '7', name: 'Arm Securuty', type: "toggle", featured: false },
+	$scope.areas = [
+		{ id: '1', name: 'Overall Event', type: "range", value: '68', minValue : "0", maxValue : "250", units: " Visitors", iconBefore: 'ion-unlocked', iconAfter: 'ion-locked', positionSelect : "", script: "", featured: true, 
+			positions : []
+		},
+		{ id: '2', name: 'Main Hall', type: "range", value: '24', minValue : "0", maxValue : "250", units: " Visitors", iconBefore: 'ion-unlocked', iconAfter: 'ion-locked', positionSelect : "", script: "", featured: false,
+			positions : [
+			{ id: '1', name: 'VIP Door', icon: 'ion-log-in', status: 'Entry/Exit', featured: true, userSelect: "stacy", entryCount: "21", exitCount: "2" , 
+				users : [
+					{ username: 'Paul', email: 'paul@test.domain', location: false, id: 'paul', avatar: 'img/noavatar.png', enabled: 'false', lastLogin: 'Last login: never' , userType: 'Attendant' },
+					{ username: 'Mary', email: 'mary@test.domain', location: false, id: 'mary', avatar: 'img/noavatar.png', enabled: 'true', lastLogin: 'Last login: never' , userType: 'Attendant' },
+				]  
+			},
+			{ id: '2', name: 'General Entrance', icon: 'ion-log-in', status: 'Entry Only', color: 'balanced', featured: true, userSelect: "mom", entryCount: "124", exitCount :"0" },
+			{ id: '3', name: 'General Exit', icon: 'ion-log-in', status: 'Exit Only', color: 'assertive', featured: true, userSelect: "admin", entryCount: "0", exitCount: "12" }]
+		},
+		{ id: '3', name: 'Bar Area', type: "range", value: '40', minValue : "0", maxValue : "100", units: " Visitors", iconBefore: 'ion-unlocked', iconAfter: 'ion-locked', positionSelect : "", script: "", featured: false, 
+			positions : [
+			{ id: '1', name: 'General Entrance', icon: 'ion-log-in', status: 'Entry Only', color: 'balanced', featured: true, userSelect: "stacy", entryCount: "29", exitCount :"0", 
+				users : [
+					{ username: 'Paul', email: 'paul@test.domain', location: false, id: 'paul', avatar: 'img/noavatar.png', enabled: 'false', lastLogin: 'Last login: never' , userType: 'Attendant' },
+					{ username: 'Mary', email: 'mary@test.domain', location: false, id: 'mary', avatar: 'img/noavatar.png', enabled: 'true', lastLogin: 'Last login: never' , userType: 'Attendant' },
+				]  
+			},
+			{ id: '2', name: 'General Exit', icon: 'ion-log-in', status: 'Exit Only', color: 'assertive', featured: true, userSelect: "mom", entryCount: "0", exitCount: "24"  }]
+		},
 	];
 	$scope.toggleLeft = function() {
 		$ionicSideMenuDelegate.toggleLeft();
 	};
-	$scope.deviceTap = function(route, device) {
-		$scope.device = device;
+	$scope.positionTap = function(route, position) {
+		$scope.position = position;
 		$state.go(route);
 	};
 	$ionicPopover.fromTemplateUrl('templates/alerts.html', {
@@ -197,10 +205,10 @@ angular.module('iot', ['ionic','chart.js'])
 		$ionicLoading.show({
 		  template: 'Logging in...'
 		});
-		$http.get('http://overlord.elasticbeanstalk.com/rest/users/signin?uname='+ $scope.cred.username +'&pass='+$scope.cred.password).
+		$http.post('http://localhost:8082/Overlord/rest/users/signin?uname='+ $scope.cred.username +'&pass='+$scope.cred.password).
 		    success(function(data, status, headers, config) {
 		      $scope.user = data;
-		      if($scope.user.id===0){
+		      if($scope.user ==='' || $scope.user ==undefined || $scope.user.id===0){
 		      	$ionicLoading.show({
 					template: 'Invalid credentials, please try again...'
 				});
@@ -215,7 +223,7 @@ angular.module('iot', ['ionic','chart.js'])
 
 		     	$timeout( function() {
 		      		$ionicLoading.hide();
-		      		$location.path('route/dashboard/home');
+		      		$location.path('route/events');
 		      	}, 1600);
 				
 		      }
@@ -277,6 +285,7 @@ angular.module('iot', ['ionic','chart.js'])
 		showScale: true,
 		maintainAspectRatio: false,
 		datasetStrokeWidth : 1,
+		datasetFill : true,
     }; 
 
     function getLiveChartData () {
@@ -446,17 +455,17 @@ angular.module('iot', ['ionic','chart.js'])
 	$scope.setFormScope = function(scope){
 		this.formScope = scope;
 	}
-	$scope.newdevice = {};
+	$scope.newposition = {};
 	$scope.deviceSubmit = function() {
-		if(!$scope.newdevice.name) {
+		if(!$scope.newposition.name) {
 			alert('Name required');
 			return;
 		}
-		if(!$scope.newdevice.icon) {
-			$scope.newdevice.icon = 'ion-alert';
+		if(!$scope.newposition.icon) {
+			$scope.newposition.icon = 'ion-alert';
 		}
-		$scope.newdevice.id = $scope.devices.length + 2;
-		$scope.devices.push($scope.newdevice);
+		$scope.newposition.id = $scope.positions.length + 2;
+		$scope.positions.push($scope.newposition);
 		this.formScope.addDeviceForm.$setPristine();
 		var defaultForm = {
 			id : "",
@@ -468,7 +477,7 @@ angular.module('iot', ['ionic','chart.js'])
 			actionSelect : "",
 			locationSelect : ""
 		};
-		$scope.newdevice = defaultForm;
+		$scope.newposition = defaultForm;
 	};
 })
 .controller('addLocation', function($scope) {

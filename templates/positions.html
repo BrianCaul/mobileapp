@@ -1,4 +1,4 @@
-<ion-view title="Devices">
+<ion-view title="Overlord">
 	<ion-content class="padding-vertical">
 		<div class="padding-horizontal">	
 			<h4>Wi-Fi Camera Snapshots</h4>
@@ -28,13 +28,13 @@
 				<img src="img/room2.jpg"/>
 			</div>
 		</wrap-owlcarousel>
-		<div ng-repeat="device in devices">
+		<div ng-repeat="position in positions">
 			<div class="col-lg-50">
-				<div class="item item-icon-left" on-tap="deviceTap('router.device', device)">
-					<i class="icon" ng-class="device.icon"></i>
-					{{ device.name }}
-					<span class="item-note" ng-class="device.color">
-					{{ device.status }}
+				<div class="item item-icon-left" on-tap="positionTap('router.position', position)">
+					<i class="icon" ng-class="position.icon"></i>
+					{{ position.name }}
+					<span class="item-note" ng-class="position.color">
+					{{ position.status }}
 					</span>
 				</div>
 			</div>

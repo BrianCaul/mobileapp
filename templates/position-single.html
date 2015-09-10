@@ -1,0 +1,79 @@
+<ion-view title="Overlord">
+	<ion-content class="padding">
+		<div ng-if="position.id === null">
+			<h5 class="text-center">No Positions to Show</h5>
+		</div>
+		<div ng-if="position.id != null">
+			<div class="list">
+				<div class="item item-icon-left">
+					<i class="icon" ng-class="position.icon"></i>
+					{{position.name}}
+					<span class="item-note">
+					{{position.status}}
+					</span>
+				</div>
+				<li ng-if="(actions | filter:{id:position.actionSelect})[0].type === 'range'" class="item">
+					{{ (actions | filter:{id:position.actionSelect})[0].name }}
+					<span class="item-note">
+						{{ (actions | filter:{id:position.actionSelect})[0].value }}{{ (actions | filter:{id:position.actionSelect})[0].units }}
+					</span>
+				</li>
+				<div ng-if="(actions | filter:{id:position.actionSelect})[0].type === 'range'" class="item range range-balanced">
+					<i class="icon" ng-class="(actions | filter:{id:position.actionSelect})[0].iconBefore"></i>
+					<input type="range"
+						ng-model="(actions | filter:{id:position.actionSelect})[0].value"
+						name="{{ (actions | filter:{id:position.actionSelect})[0].id }}_action"
+						min="{{ (actions | filter:{id:position.actionSelect})[0].minValue }}"
+						max="{{ (actions | filter:{id:position.actionSelect})[0].maxValue }}">
+					<i class="icon" ng-class="(actions | filter:{id:position.actionSelect})[0].iconAfter"></i>
+				</div>
+				<div ng-if="(actions | filter:{id:position.actionSelect})[0].type === 'toggle'" class="item item-toggle">
+					{{ (actions | filter:{id:position.actionSelect})[0].name }}
+					<label class="toggle toggle-balanced">
+					<input type="checkbox" ng-checked="(actions | filter:{id:position.actionSelect})[0].state === 'on'">
+					<div class="track">
+						<div class="handle"></div>
+					</div>
+					</label>
+				</div>
+				<div class="item item-divider">
+				Position Info
+				</div>
+				<li class="item item-toggle">
+					Enabled
+					<label class="toggle toggle-balanced">
+						<input type="checkbox" checked ng-model="position.featured">
+						<div class="track">
+							<div class="handle"></div>
+						</div>
+					</label>
+				</li>
+				<div class="item item-divider">
+				Attendants
+				</div>
+				<div ng-repeat="user in position.users">
+						<div class="col-lg-100" on-hold="userHold(user)">
+							<div class="card">
+								<div class="item item-avatar">
+									<img ng-src="{{user.avatar}}">
+									<h2>{{ user.username }}</h2>
+									<p>{{user.lastLogin}} <span ng-show="user.lastLogin == 'Online'" class="balanced">&bull;</span></p>
+								</div>
+								<ul class="list">
+									<li class="item item-toggle">
+									Assigned
+									<label class="toggle toggle-balanced">
+										<input type="checkbox" ng-checked="user.enabled == 'true'">
+										<div class="track">
+											<div class="handle"></div>
+										</div>
+									</label>
+									</li>
+								</ul>
+							</div>
+						</div>
+				</div>
+			</div>
+		</div>
+	</ion-content>
+</ion-view>

@@ -1,68 +1,38 @@
-<ion-view title="Favorites">	
+<ion-view title="Overlord">	
 	<ion-content>
-		<div class="padding">
-			<div class="item item-divider">
-			Featured Actions
-			</div>
-		</div>
-		<div ng-repeat="action in actions | filter: { featured: true}">
-			<div class="col-lg-50 padding-horizontal">
-				<li ng-if="action.type === 'range'" class="item">
-					{{ action.name }}
+				<div ng-repeat="area in areas | filter: { featured: false}">
+			<div class="col-lg-100 padding-horizontal" style="margin-top:10px;">
+				<li ng-if="area.type === 'range'" class="item">
+					{{ area.name }}
 					<span class="item-note">
-						{{ action.value }}{{ action.units }}
+						{{ area.value }} / {{area.maxValue}} {{ area.units }} ( {{(area.value / area.maxValue) * 100 | number:0}}% )
 					</span>
 				</li>
-				<div ng-if="action.type === 'range'" class="item range range-balanced">
-					<i class="icon" ng-class="action.iconBefore"></i>
-					<input type="range" ng-model="action.value" name="{{ action.id }}_action" min="{{ action.minValue }}" max="{{ action.maxValue }}">
-					<i class="icon" ng-class="action.iconAfter"></i>
+				<div ng-if="area.type === 'range'" class="item range range-balanced">
+					<i class="icon" ng-class="area.iconBefore"></i>
+					<input type="range" ng-model="area.value" name="{{ area.id }}_action" min="{{ area.minValue }}" max="{{ area.maxValue }}">
+					<i class="icon" ng-class="area.iconAfter"></i>
 				</div>
-				<div ng-if="action.type === 'toggle'" class="item item-toggle">
-					{{ action.name }}
-					<label class="toggle toggle-balanced">
-					<input type="checkbox" ng-checked="action.state === 'on'">
-					<div class="track">
-						<div class="handle"></div>
-					</div>
-					</label>
-				</div>
+						<div class="clearfix"></div>
+						<div class="padding">
+							<div class="item item-divider">
+							Positions
+							</div>
+						</div>
+						<div ng-repeat="position in area.positions | filter: { featured: true}">
+							<div class="col-lg-50 padding-horizontal">
+								<div class="item item-icon-left" on-tap="positionTap('router.position', position)">
+									<i class="icon" ng-class="position.icon"></i>
+									{{ position.name }} : {{position.entryCount}}
+									<span class="item-note" ng-class="position.color">
+									{{ position.status }}
+									</span>
+								</div>
+							</div>
+							<div ng-if="$last" class="clearfix"></div>
+						</div>
 			</div>
+			<div class="clearfix"></div>
 		</div>
-		<div class="clearfix"></div>
-		<div class="padding">
-			<div class="item item-divider">
-			Featured Places
-			</div>
-		</div>
-		<div ng-repeat="location in locations | filter: { featured: true}">
-			<div class="col-lg-50 padding-horizontal">
-				<div class="item item-icon-left">
-					<i class="icon" ng-class="location.icon"></i>
-					{{ location.name }}
-					<span class="item-note">
-					{{ location.note }}
-					</span>
-				</div>
-			</div>
-		</div>
-		<div class="clearfix"></div>
-		<div class="padding">
-			<div class="item item-divider">
-			Featured Devices
-			</div>
-		</div>
-		<div ng-repeat="device in devices | filter: { featured: true}">
-			<div class="col-lg-50 padding-horizontal">
-				<div class="item item-icon-left" on-tap="deviceTap('router.device', device)">
-					<i class="icon" ng-class="device.icon"></i>
-					{{ device.name }}
-					<span class="item-note" ng-class="device.color">
-					{{ device.status }}
-					</span>
-				</div>
-			</div>
-		</div>
-		<div class="clearfix"></div>
 	</ion-content>
 </ion-view>
