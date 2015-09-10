@@ -54,7 +54,7 @@
 						</div>
 						<div ng-repeat="position in area.positions | filter: { featured: true}">
 							<div class="col-lg-50 padding-horizontal">
-								<div class="item item-icon-left" on-tap="deviceTap('router.device', position)">
+								<div class="item item-icon-left" on-tap="positionTap('router.position', position)">
 									<i class="icon" ng-class="position.icon"></i>
 									{{ position.name }} : {{position.entryCount}}
 									<span class="item-note" ng-class="position.color">
