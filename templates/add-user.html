@@ -1,6 +1,6 @@
-<ion-view title="Add New User" ng-controller="addUser">
+<ion-view title="Overlord" ng-controller="addUser">
 	<ion-content>
-		<form name="addUserForm" ng-init="setFormScope(this)" data-ng-submit="userSubmit()">
+		<form name="addUserForm" ng-init="setFormScope(this)">
 			<div class="list">
 				<div class="item item-divider">
 				User Info
@@ -9,18 +9,27 @@
 					<input type="text" placeholder="Username" ng-model="newuser.username">
 				</label>
 				<label class="item item-input">
-					<input type="email" placeholder="Email" ng-model="newuser.email">
+					<input type="text" placeholder="Password" ng-model="newuser.password">
 				</label>
 				<label class="item item-input">
-					<input type="text" placeholder="Image" ng-model="newuser.avatar">
+					<input type="email" placeholder="Email" ng-model="newuser.email">
 				</label>
 				<div class="item item-divider">
-				Tracking
+				Select User Type
+				</div>
+				<label class="item item-input item-select">
+					<div class="input-label">
+					User Type
+					</div>
+					<select ng-model="newuser.userType" ng-options="o.id as o.name for o in userTypes"></select>
+				</label>
+				<div class="item item-divider">
+				User Actions
 				</div>
 				<li class="item item-toggle">
-					Show Location
+					Enabled
 					<label class="toggle toggle-balanced">
-						<input type="checkbox" checked ng-model="newuser.location">
+						<input type="checkbox" checked ng-model="newuser.enabled">
 						<div class="track">
 							<div class="handle"></div>
 						</div>
@@ -28,7 +37,7 @@
 				</li>
 			</div>
 			<div class="padding">
-				<button class="button button-balanced">
+				<button class="button button-balanced" ng-click="userSubmit()">
 					Add User
 				</button>
 			</div>

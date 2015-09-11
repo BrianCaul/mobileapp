@@ -129,9 +129,15 @@ angular.module('iot', ['ionic','chart.js'])
 .controller('MainCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout) {
 	$scope.users = [
 		{ username: 'Admin', email: 'admin@test.domain', location: true, id: 'admin', avatar: 'img/men.jpg', enabled: 'true', lastLogin: 'Online', userType: 'Event Manager' },
-		{ username: 'David', email: 'david@test.domain', location: true, id: 'david', avatar: 'img/girl.jpg', enabled: 'true', lastLogin: 'Last login: 01/09/2014' , userType: 'Supervisor' },
+		{ username: 'Anna', email: 'anna@test.domain', location: true, id: 'anna', avatar: 'img/girl.jpg', enabled: 'true', lastLogin: 'Last login: 01/09/2014' , userType: 'Supervisor' },
 		{ username: 'Paul', email: 'paul@test.domain', location: false, id: 'paul', avatar: 'img/noavatar.png', enabled: 'false', lastLogin: 'Last login: never' , userType: 'Attendant' },
 		{ username: 'Mary', email: 'mary@test.domain', location: false, id: 'mary', avatar: 'img/noavatar.png', enabled: 'true', lastLogin: 'Last login: never' , userType: 'Attendant' },
+	];
+	
+	$scope.userTypes = [
+		{ name: 'Event Manager', id: 'Event Manager' },
+		{ name: 'Supervisor', id: 'Supervisor' },
+		{ name: 'Attendant', id: 'Attendant' },
 	];
 		
 	$scope.position = { id: null, name: 'No Position', icon: 'ion-ios7-help-empty', status: 'Offline' },
@@ -435,6 +441,10 @@ angular.module('iot', ['ionic','chart.js'])
 			alert('Username required');
 			return;
 		}
+		if(!$scope.newuser.password) {
+			alert('Password required');
+			return;
+		}
 		if(!$scope.newuser.avatar) {
 			$scope.newuser.avatar = 'img/noavatar.png';
 		}
@@ -445,8 +455,11 @@ angular.module('iot', ['ionic','chart.js'])
 		var defaultForm = {
 			id : "",
 			username : "",
+			password: "",
+			userType: "",
+			email: "",
 			avatar : "",
-			location: false
+			enabled: false
 		};
 		$scope.newuser = defaultForm;
 	};
