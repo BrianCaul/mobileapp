@@ -7,34 +7,10 @@
 			<div class="list">
 				<div class="item item-icon-left">
 					<i class="icon" ng-class="position.icon"></i>
-					{{position.name}}
-					<span class="item-note">
-					{{position.status}}
+					{{position.positionName}}
+					<span class="item-note" ng-class="position.color">
+					{{position.positionFunction}}
 					</span>
-				</div>
-				<li ng-if="(actions | filter:{id:position.actionSelect})[0].type === 'range'" class="item">
-					{{ (actions | filter:{id:position.actionSelect})[0].name }}
-					<span class="item-note">
-						{{ (actions | filter:{id:position.actionSelect})[0].value }}{{ (actions | filter:{id:position.actionSelect})[0].units }}
-					</span>
-				</li>
-				<div ng-if="(actions | filter:{id:position.actionSelect})[0].type === 'range'" class="item range range-balanced">
-					<i class="icon" ng-class="(actions | filter:{id:position.actionSelect})[0].iconBefore"></i>
-					<input type="range"
-						ng-model="(actions | filter:{id:position.actionSelect})[0].value"
-						name="{{ (actions | filter:{id:position.actionSelect})[0].id }}_action"
-						min="{{ (actions | filter:{id:position.actionSelect})[0].minValue }}"
-						max="{{ (actions | filter:{id:position.actionSelect})[0].maxValue }}">
-					<i class="icon" ng-class="(actions | filter:{id:position.actionSelect})[0].iconAfter"></i>
-				</div>
-				<div ng-if="(actions | filter:{id:position.actionSelect})[0].type === 'toggle'" class="item item-toggle">
-					{{ (actions | filter:{id:position.actionSelect})[0].name }}
-					<label class="toggle toggle-balanced">
-					<input type="checkbox" ng-checked="(actions | filter:{id:position.actionSelect})[0].state === 'on'">
-					<div class="track">
-						<div class="handle"></div>
-					</div>
-					</label>
 				</div>
 				<div class="item item-divider">
 				Position Info
@@ -42,7 +18,7 @@
 				<li class="item item-toggle">
 					Enabled
 					<label class="toggle toggle-balanced">
-						<input type="checkbox" checked ng-model="position.featured">
+						<input type="checkbox" checked ng-model="position.enabled">
 						<div class="track">
 							<div class="handle"></div>
 						</div>

@@ -1,0 +1,33 @@
+<ion-view title="Overlord" ng-controller="AttendantController">
+	<ion-content class="padding">
+		<div ng-if="attendantposition.id === null">
+			<h5 class="text-center">Position Unavailable</h5>
+		</div>
+		<div ng-if="attendantposition.id != null">
+			<div class="list">
+				<div class="item item-icon-left">
+					<i class="icon" ng-class="attendantposition.icon"></i>
+					{{attendantposition.positionName}}
+					<span class="item-note" ng-class="attendantposition.color">
+					{{attendantposition.positionFunction}}
+					</span>
+				</div>
+				<div class="row"><br/></div>
+				<div class="row">
+				  <div class="col col-50 col-offset-25">
+				    <img ng-click="entrySubmit()" class="img-responsive" src="img/text-plus-icon.png"/>
+				  </div>
+				</div>
+				<div class="row">
+				  <div class="col col-50 col-offset-25">
+				    <img ng-click="exitSubmit()" class="img-responsive" src="img/text-minus-icon.png"/>
+				  </div>
+				</div>
+				<br/>
+				<div class="item" style="text-align:center;">
+					Number of Visitors : {{attendantposition.entryCount}}
+				</div>
+			</div>
+		</div>
+	</ion-content>
+</ion-view>

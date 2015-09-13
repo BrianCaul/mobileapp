@@ -52,13 +52,13 @@
 							Positions
 							</div>
 						</div>
-						<div ng-repeat="position in area.positions | filter: { featured: true}">
+						<div ng-repeat="position in area.positions | filter: { enabled: true}">
 							<div class="col-lg-50 padding-horizontal">
 								<div class="item item-icon-left" on-tap="positionTap('router.position', position)">
 									<i class="icon" ng-class="position.icon"></i>
-									{{ position.name }} : {{position.entryCount}}
+									{{ position.positionName }} : {{position.entryCount}}
 									<span class="item-note" ng-class="position.color">
-									{{ position.status }}
+									{{ position.positionFunction }}
 									</span>
 								</div>
 							</div>

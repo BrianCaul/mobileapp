@@ -1,0 +1,30 @@
+<ion-view title="Add New Venue" ng-controller="addVenue">
+	<ion-content>
+		<form name="addVenueForm" ng-init="setFormScope(this)" data-ng-submit="venueSubmit()">
+			<div class="list" style="background:#ffffff;">
+				<div class="item item-divider">
+				Venue Info
+				</div>
+				<label class="item item-input item-stacked-label">
+					<span class="input-label">Name</span>
+					<input type="text" placeholder="Name" ng-model="newvenue.venueName">
+				</label>
+				<label class="item item-input item-stacked-label">
+					<span class="input-label">Capacity</span>
+					<input type="text" placeholder="Capacity" ng-model="newvenue.capacity">
+				</label>
+				<label class="item item-input item-select">
+					<div class="input-label">
+					Event
+					</div>
+					<select ng-model="newvenue.eventId" ng-options="event.id as event.eventName for event in events"></select>
+				</label>
+			</div>
+			<div class="padding">
+				<button class="button button-balanced">
+					Add Venue
+				</button>
+			</div>
+		</form>
+	</ion-content>
+</ion-view>

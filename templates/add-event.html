@@ -1,0 +1,58 @@
+<ion-view title="Add New Event" ng-controller="addEvent">
+	<ion-content>
+		<form name="addEventForm" ng-init="setFormScope(this)" data-ng-submit="eventSubmit()">
+			<div class="list" style="background:#ffffff;">
+				<div class="item item-divider">
+				Event Info
+				</div>
+				<label class="item item-input item-stacked-label">
+					<span class="input-label">Name</span>
+					<input type="text" placeholder="Name" ng-model="newevent.eventName">
+				</label>
+				<label class="item item-input item-stacked-label">
+					<span class="input-label">Description</span>
+					<input type="text" placeholder="Description" ng-model="newevent.note">
+				</label>
+				<label class="item item-input item-stacked-label">
+					<span class="input-label">Capacity</span>
+					<input type="text" placeholder="Capacity" ng-model="newevent.capacity">
+				</label>
+				<label class="item item-input item">
+					<div class="input-label">
+					Start Date & Time
+					</div>
+					<input type="datetime-local">
+				</label>
+				<label class="item item-input item">
+					<div class="input-label">
+					End Date & Time
+					</div>
+					<input type="datetime-local">
+				</label>
+				<div class="item item-divider">
+				Daily Reset Settings
+				</div>
+				<li class="item item-toggle">
+					Enabled
+					<label class="toggle toggle-balanced">
+						<input type="checkbox" checked ng-model="newevent.resetEnabled">
+						<div class="track">
+							<div class="handle"></div>
+						</div>
+					</label>
+				</li>
+				<label ng-if="newevent.resetEnabled" class="item item-input item-select">
+					<div class="input-label">
+					Daily Reset Time
+					</div>
+					<input type="time">
+				</label>
+			</div>
+			<div class="padding">
+				<button class="button button-balanced">
+					Add Event
+				</button>
+			</div>
+		</form>
+	</ion-content>
+</ion-view>

@@ -1,0 +1,28 @@
+<ion-view title="Add New Area" ng-controller="addArea">
+	<ion-content>
+		<form name="addAreaForm" ng-init="setFormScope(this)" data-ng-submit="areaSubmit()">
+			<div class="list">
+				<div class="item item-divider">
+				Area Details
+				</div>
+				<label class="item item-input">
+					<input type="text" placeholder="Name" ng-model="newarea.areaName">
+				</label>
+				<label class="item item-input">
+					<input type="text" placeholder="Capacity" ng-model="newarea.capacity">
+				</label>
+				<label class="item item-input item-select">
+					<div class="input-label">
+					Select Venue
+					</div>
+					<select ng-model="newarea.eventid" ng-options="o.id as o.venueName for o in venues"></select>
+				</label>
+			</div>
+			<div class="padding">
+				<button class="button button-balanced">
+					Add Area
+				</button>
+			</div>
+		</form>
+	</ion-content>
+</ion-view>

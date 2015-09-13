@@ -1,0 +1,49 @@
+<ion-view title="Add New Position" ng-controller="addPosition">
+	<ion-content>
+		<form name="addPositionForm" ng-init="setFormScope(this)" data-ng-submit="positionSubmit()">
+			<div class="list">
+				<div class="item item-divider">
+				Position Details
+				</div>
+				<label class="item item-input">
+					<input type="text" placeholder="Name" ng-model="newposition.positionName">
+				</label>
+				<label class="item item-input item-select">
+					<div class="input-label">
+					Position Type
+					</div>
+					<select ng-model="newposition.positionType" ng-options="o.id as o.name for o in positionTypes"></select>
+				</label>
+				<label class="item item-input item-select">
+					<div class="input-label">
+					Position Function
+					</div>
+					<select ng-model="newposition.positionFunction" ng-options="o.id as o.name for o in positionFunctions"></select>
+				</label>
+				<label class="item item-input item-select">
+					<div class="input-label">
+					Select Area
+					</div>
+					<select ng-model="newposition.areaid" ng-options="o.id as o.name for o in areas"></select>
+				</label>
+				<div class="item item-divider">
+				Position Actions
+				</div>
+				<li class="item item-toggle">
+					Enabled
+					<label class="toggle toggle-balanced">
+						<input type="checkbox" checked ng-model="newposition.enabled">
+						<div class="track">
+							<div class="handle"></div>
+						</div>
+					</label>
+				</li>
+			</div>
+			<div class="padding">
+				<button class="button button-balanced">
+					Add Position
+				</button>
+			</div>
+		</form>
+	</ion-content>
+</ion-view>
