@@ -4,11 +4,13 @@ angular.module('iot', ['ionic','chart.js'])
   $stateProvider
     .state('router', {
       url: "/route",
+	  cache: false,
       abstract: true,
       templateUrl: "templates/side-menu-left.html"
     })
     .state('router.dashboard', {
       url: "/dashboard",
+	  cache: false,
 	  abstract: true,
       views: {
         'menuContent' :{
@@ -18,6 +20,7 @@ angular.module('iot', ['ionic','chart.js'])
     })
 	.state('router.dashboard.home', {
       url: "/home",
+	  cache: false,
       views: {
         'home-tab' :{
           templateUrl: "templates/home.html"
@@ -26,6 +29,7 @@ angular.module('iot', ['ionic','chart.js'])
     })
 	.state('router.dashboard.areas', {
       url: "/areas",
+	  cache: false,
       views: {
         'areas-tab' :{
           templateUrl: "templates/areas.html"
@@ -34,6 +38,7 @@ angular.module('iot', ['ionic','chart.js'])
     })
 	.state('router.dashboard.settings', {
       url: "/settings",
+	  cache: false,
       views: {
         'settings-tab' :{
           templateUrl: "templates/settings.html"
@@ -42,6 +47,7 @@ angular.module('iot', ['ionic','chart.js'])
     })
 	.state('router.dashboard.charts', {
       url: "/charts",
+	  cache: false,
       views: {
         'charts-tab' :{
           templateUrl: "templates/charts.html"
@@ -50,6 +56,7 @@ angular.module('iot', ['ionic','chart.js'])
     })
 	.state('router.positions', {
       url: "/positions",
+	  cache: false,
       views: {
         'menuContent' :{
           templateUrl: "templates/positions.html"
@@ -58,6 +65,7 @@ angular.module('iot', ['ionic','chart.js'])
     })
 	.state('router.position', {
       url: "/position",
+	  cache: false,
       views: {
         'menuContent' :{
           templateUrl: "templates/position-single.html"
@@ -66,14 +74,17 @@ angular.module('iot', ['ionic','chart.js'])
     })
 	.state('router.events', {
       url: "/events",
+	  cache: false,
       views: {
         'menuContent' :{
-          templateUrl: "templates/events.html"
+          templateUrl: "templates/events.html",
+		  controller: 'EventCtrl'
         }
       }
     })
 	.state('router.users', {
       url: "/users",
+	  cache: false,
       views: {
         'menuContent' :{
           templateUrl: "templates/users.html"
@@ -82,14 +93,17 @@ angular.module('iot', ['ionic','chart.js'])
     })
 	.state('router.attendantview', {
       url: "/attendantview",
+	  cache: false,
       views: {
         'menuContent' :{
-          templateUrl: "templates/attendantview.html"
+          templateUrl: "templates/attendantview.html",
+		  controller: 'AttendantController'
         }
       }
     })
 	.state('router.addUser', {
       url: "/add-user",
+	  cache: false,
       views: {
         'menuContent' :{
           templateUrl: "templates/add-user.html"
@@ -98,6 +112,7 @@ angular.module('iot', ['ionic','chart.js'])
     })
 	.state('router.addEvent', {
       url: "/add-event",
+	  cache: false,
       views: {
         'menuContent' :{
           templateUrl: "templates/add-event.html"
@@ -106,6 +121,7 @@ angular.module('iot', ['ionic','chart.js'])
     })
 	.state('router.addPosition', {
       url: "/add-position",
+	  cache: false,
       views: {
         'menuContent' :{
           templateUrl: "templates/add-position.html"
@@ -114,6 +130,7 @@ angular.module('iot', ['ionic','chart.js'])
     })
 	.state('router.addArea', {
       url: "/add-area",
+	  cache: false,
       views: {
         'menuContent' :{
           templateUrl: "templates/add-area.html"
@@ -122,6 +139,7 @@ angular.module('iot', ['ionic','chart.js'])
     })
 	.state('router.addVenue', {
       url: "/add-venue",
+	  cache: false,
       views: {
         'menuContent' :{
           templateUrl: "templates/add-venue.html"
@@ -130,11 +148,13 @@ angular.module('iot', ['ionic','chart.js'])
     })
 	.state('intro', {
       url: "/intro",
+	  cache: false,
       templateUrl: "templates/intro.html"
     })
   $urlRouterProvider.otherwise("/intro");
 })
-.controller('MainCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout) {
+.controller('MainCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout, $window, $location) {
+	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
 	$scope.users = [
 		{ username: 'Admin', email: 'admin@test.domain', location: true, id: 'admin', avatar: 'img/men.jpg', enabled: 'true', lastLogin: 'Online', userType: 'Event Manager' },
 		{ username: 'Anna', email: 'anna@test.domain', location: true, id: 'anna', avatar: 'img/girl.jpg', enabled: 'true', lastLogin: 'Last login: 01/09/2014' , userType: 'Supervisor' },
@@ -227,13 +247,119 @@ angular.module('iot', ['ionic','chart.js'])
 	$timeout(function () {
 		ionic.EventController.trigger("resize", "", true, false);
 	}, 1500);
+	
+	$scope.logout = function() {
+		$window.localStorage.clear();
+			$location.path('/');
+			$window.location.reload();
+	};
 })
-.controller('Intro', function($scope, $ionicSlideBoxDelegate, $timeout, $ionicLoading, $ionicPopup, $location,$http) {
+.controller('EventCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout, $window, $location) {
+	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
+	$scope.users = [
+		{ username: 'Admin', email: 'admin@test.domain', location: true, id: 'admin', avatar: 'img/men.jpg', enabled: 'true', lastLogin: 'Online', userType: 'Event Manager' },
+		{ username: 'Anna', email: 'anna@test.domain', location: true, id: 'anna', avatar: 'img/girl.jpg', enabled: 'true', lastLogin: 'Last login: 01/09/2014' , userType: 'Supervisor' },
+		{ username: 'Paul', email: 'paul@test.domain', location: false, id: 'paul', avatar: 'img/noavatar.png', enabled: 'false', lastLogin: 'Last login: never' , userType: 'Attendant' },
+		{ username: 'Mary', email: 'mary@test.domain', location: false, id: 'mary', avatar: 'img/noavatar.png', enabled: 'true', lastLogin: 'Last login: never' , userType: 'Attendant' },
+	];
+	
+	$scope.userTypes = [
+		{ name: 'Event Manager', id: 'Event Manager' },
+		{ name: 'Supervisor', id: 'Supervisor' },
+		{ name: 'Attendant', id: 'Attendant' },
+	];
+
+	$scope.positionTypes = [
+		{ name: 'External', id: 'External' },
+		{ name: 'Internal', id: 'Internal' }
+	];
+
+	$scope.positionFunctions = [
+		{ name: 'Entry/Exit', id: 'Entry/Exit' },
+		{ name: 'Entry Only', id: 'Entry' },
+		{ name: 'Exit Only', id: 'Exit' },
+	];
+		
+	$scope.venue = { id: null, venueName: 'New Venue', capacity: 'Exit', eventId: '' },
+	$scope.venues = [
+		{ id: '1', venueName: 'New Venue 1', capacity: '100', eventId: '' },
+		{ id: '2',  venueName: 'New Venue 2', capacity: '50', eventId: ''  },
+		{ id: '3',  venueName: 'New Venue 3', capacity: '20', eventId: '' },
+	];
+
+	$scope.position = { id: null, positionName: 'New Position', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false },
+	$scope.positions = [
+		{ id: '1', positionName: 'New Position 1', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false },
+		{ id: '2', positionName: 'New Position 2', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false  },
+		{ id: '3', positionName: 'New Position 3', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false },
+	];
+	$scope.event = { id: null, eventName: 'Event 1', icon: 'ion-log-in', note: 'Test event 1', resetEnabled: true, start: '', end: '', reset:'' },
+	$scope.events = [
+		{ id: '1', eventName: 'Event 1', icon: 'ion-log-in', note: 'Test event 1', resetEnabled: true, start: '', end: '', reset:'' },
+		{ id: '2', eventName: 'Event 2', icon: 'ion-log-in', note: 'Test event 2 description', resetEnabled: true, start: '', end: '', reset:'' },
+	];
+	$scope.areas = [
+		{ id: '1', name: 'Overall Event', type: "range", value: '68', minValue : "0", maxValue : "250", units: " Visitors", iconBefore: 'ion-unlocked', iconAfter: 'ion-locked', positionSelect : "", script: "", featured: true, 
+			positions : []
+		},
+		{ id: '2', name: 'Main Hall', type: "range", value: '24', minValue : "0", maxValue : "250", units: " Visitors", iconBefore: 'ion-unlocked', iconAfter: 'ion-locked', positionSelect : "", script: "", featured: false,
+			positions : [
+			{ id: '1', positionName: 'VIP Door', icon: 'ion-log-in', positionFunction: 'Entry/Exit', enabled: true, positionType: 'External', entryCount: "21", exitCount: "2" , 
+				users : [
+					{ username: 'Paul', email: 'paul@test.domain', location: false, id: 'paul', avatar: 'img/noavatar.png', enabled: 'false', lastLogin: 'Last login: never' , userType: 'Attendant' },
+					{ username: 'Mary', email: 'mary@test.domain', location: false, id: 'mary', avatar: 'img/noavatar.png', enabled: 'true', lastLogin: 'Last login: never' , userType: 'Attendant' },
+				]  
+			},
+			{ id: '2', positionName: 'General Entrance', icon: 'ion-log-in', positionFunction: 'Entry Only', color: 'balanced', enabled: true, positionType: 'External', entryCount: "124", exitCount :"0" },
+			{ id: '3', positionName: 'General Exit', icon: 'ion-log-in', positionFunction: 'Exit Only', color: 'assertive', enabled: true, positionType: 'External', entryCount: "0", exitCount: "12" }]
+		},
+		{ id: '3', name: 'Bar Area', type: "range", value: '40', minValue : "0", maxValue : "100", units: " Visitors", iconBefore: 'ion-unlocked', iconAfter: 'ion-locked', positionSelect : "", script: "", featured: false, 
+			positions : [
+			{ id: '1', positionName: 'General Entrance', icon: 'ion-log-in', positionFunction: 'Entry Only', color: 'balanced', enabled: true, positionType: 'Internal', entryCount: "29", exitCount :"0", 
+				users : [
+					{ username: 'Paul', email: 'paul@test.domain', location: false, id: 'paul', avatar: 'img/noavatar.png', enabled: 'false', lastLogin: 'Last login: never' , userType: 'Attendant' },
+					{ username: 'Mary', email: 'mary@test.domain', location: false, id: 'mary', avatar: 'img/noavatar.png', enabled: 'true', lastLogin: 'Last login: never' , userType: 'Attendant' },
+				]  
+			},
+			{ id: '2', positionName: 'General Exit', icon: 'ion-log-in', positionFunction: 'Exit Only', color: 'assertive', enabled: true, positionType: 'Internal', entryCount: "0", exitCount: "24"  }]
+		},
+	];
+	$scope.toggleLeft = function() {
+		$ionicSideMenuDelegate.toggleLeft();
+	};
+	$scope.positionTap = function(route, position) {
+		$scope.position = position;
+		$state.go(route);
+	};
+	$ionicPopover.fromTemplateUrl('templates/alerts.html', {
+		scope: $scope,
+	}).then(function(popover) {
+		$scope.popover = popover;
+	});
+	$scope.openAlerts = function($event) {
+		$scope.popover.show($event);
+	};
+	$scope.closeAlerts = function() {
+		$scope.popover.hide();
+	};
+	$scope.$on('$destroy', function() {
+		$scope.popover.remove();
+	});
+	$timeout(function () {
+		ionic.EventController.trigger("resize", "", true, false);
+	}, 1500);
+	
+	$scope.logout = function() {
+		$window.localStorage.clear();
+			$location.path('/');
+			$window.location.reload();
+	};
+})
+.controller('Intro', function($scope, $ionicSlideBoxDelegate, $timeout, $ionicLoading, $ionicPopup, $location, $http, $window, $state) {
 	$scope.cred={
 		username:'',
 		password:''
 	}
-
 	$scope.login = function() {
 		$ionicLoading.show({
 		  template: 'Logging in...'
@@ -256,10 +382,13 @@ angular.module('iot', ['ionic','chart.js'])
 
 		     	$timeout( function() {
 		      		$ionicLoading.hide();
+					window.localStorage['user'] = JSON.stringify($scope.user);
 		      		if($scope.user.userType==='Attendant'){
-		      			$location.path('route/attendantview');
+						$state.go('router.attendantview');
+									$window.location.reload();
 		      		}else{
-		      			$location.path('route/events');
+		      			$state.go('router.events');
+									$window.location.reload();
 		      		}
 		      	}, 1600);
 				
@@ -615,11 +744,18 @@ angular.module('iot', ['ionic','chart.js'])
 		$scope.newvenue = defaultForm;
 	};
 })
-.controller('AttendantController', function($scope) {
+.controller('AttendantController', function($scope, $state, $location) {
+	$scope.logout = function() {
+		$window.localStorage.clear();
+			$location.path('/');
+			$window.location.reload();
+	};
+	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
 	//Get Users Positions
 	$scope.setFormScope = function(scope){
 		this.formScope = scope;
 	}
+	
 	$scope.attendantposition = { id: 1, positionName: 'New Position', positionFunction: 'Entry/Exit', positionType: 'External', icon: 'ion-log-in', entryCount: 10, exitCount: "0", enabled: true },
 	
 	$scope.entrySubmit = function() {
