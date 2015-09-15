@@ -152,7 +152,8 @@ angular.module('iot', ['ionic','chart.js'])
     })
   $urlRouterProvider.otherwise("/intro");
 })
-.controller('MainCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout, $window, $location) {
+.controller('MainCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout, $window, $location, SideMenuSwitcher) {
+	$scope.leftSide = SideMenuSwitcher.leftSide;
 	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
 	$scope.users = [
 		{ username: 'Admin', email: 'admin@test.domain', location: true, id: 'admin', avatar: 'img/men.jpg', enabled: 'true', lastLogin: 'Online', userType: 'Event Manager' },
@@ -246,15 +247,9 @@ angular.module('iot', ['ionic','chart.js'])
 	$timeout(function () {
 		ionic.EventController.trigger("resize", "", true, false);
 	}, 1500);
-	
-	$scope.logout = function() {
-		$window.localStorage.clear();
-		$window.location.reload();
-		$location.path('/intro');
-			
-	};
 })
-.controller('EventCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout, $window, $location) {
+.controller('EventCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout, $window, $location, SideMenuSwitcher) {
+	$scope.leftSide = SideMenuSwitcher.leftSide;
 	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
 	$scope.users = [
 		{ username: 'Admin', email: 'admin@test.domain', location: true, id: 'admin', avatar: 'img/men.jpg', enabled: 'true', lastLogin: 'Online', userType: 'Event Manager' },
@@ -348,14 +343,8 @@ angular.module('iot', ['ionic','chart.js'])
 	$timeout(function () {
 		ionic.EventController.trigger("resize", "", true, false);
 	}, 1500);
-	
-	$scope.logout = function() {
-		$window.localStorage.clear();
-			$location.path('/');
-			$window.location.reload();
-	};
 })
-.controller('Intro', function($scope, $ionicSlideBoxDelegate, $timeout, $ionicLoading, $ionicPopup, $location, $http, $window, $state) {
+.controller('Intro', function($scope, $ionicSlideBoxDelegate, $timeout, $ionicLoading, $ionicPopup, $location, $http, $window, $state, SideMenuSwitcher) {
 	$scope.cred={
 		username:'',
 		password:''
@@ -384,11 +373,11 @@ angular.module('iot', ['ionic','chart.js'])
 		      		$ionicLoading.hide();
 					window.localStorage['user'] = JSON.stringify($scope.user);
 		      		if($scope.user.userType==='Attendant'){
+						SideMenuSwitcher.leftSide.src='Attendant';
 						$state.go('router.attendantview');
-						$window.location.reload();
 		      		}else{
+						SideMenuSwitcher.leftSide.src='Admin';
 		      			$state.go('router.events');
-						$window.location.reload();
 		      		}
 		      	}, 1600);
 				
@@ -744,12 +733,9 @@ angular.module('iot', ['ionic','chart.js'])
 		$scope.newvenue = defaultForm;
 	};
 })
-.controller('AttendantController', function($scope, $state, $location) {
-	$scope.logout = function() {
-		$window.localStorage.clear();
-			$location.path('/');
-			$window.location.reload();
-	};
+.controller('AttendantController', function($scope, $state, $location, SideMenuSwitcher) {
+	$scope.leftSide = SideMenuSwitcher.leftSide;
+	
 	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
 	//Get Users Positions
 	$scope.setFormScope = function(scope){
@@ -766,6 +752,11 @@ angular.module('iot', ['ionic','chart.js'])
 		$scope.attendantposition.entryCount = $scope.attendantposition.entryCount -1;
 	};
 })
+.factory('SideMenuSwitcher', function ($rootScope) {
+        return {
+            leftSide: {src: ''}
+        };
+    })
 .directive('wrapOwlcarousel', function () {
     return {
         restrict: 'E',
