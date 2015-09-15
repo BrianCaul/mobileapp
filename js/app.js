@@ -5,7 +5,6 @@ angular.module('iot', ['ionic','chart.js'])
     .state('router', {
       url: "/route",
 	  cache: false,
-      abstract: true,
       templateUrl: "templates/side-menu-left.html"
     })
     .state('router.dashboard', {
@@ -250,8 +249,9 @@ angular.module('iot', ['ionic','chart.js'])
 	
 	$scope.logout = function() {
 		$window.localStorage.clear();
-			$location.path('/');
-			$window.location.reload();
+		$window.location.reload();
+		$location.path('/intro');
+			
 	};
 })
 .controller('EventCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout, $window, $location) {
@@ -385,10 +385,10 @@ angular.module('iot', ['ionic','chart.js'])
 					window.localStorage['user'] = JSON.stringify($scope.user);
 		      		if($scope.user.userType==='Attendant'){
 						$state.go('router.attendantview');
-									$window.location.reload();
+						$window.location.reload();
 		      		}else{
 		      			$state.go('router.events');
-									$window.location.reload();
+						$window.location.reload();
 		      		}
 		      	}, 1600);
 				
