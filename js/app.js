@@ -353,7 +353,7 @@ angular.module('iot', ['ionic','chart.js'])
 		$ionicLoading.show({
 		  template: 'Logging in...'
 		});
-		$http.post('http://overlord.elasticbeanstalk.com/rest/users/signin?uname='+ $scope.cred.username +'&pass='+$scope.cred.password).
+		$http.post('http://localhost:8082/Overlord/rest/users/signin?uname='+ $scope.cred.username +'&pass='+$scope.cred.password).
 		    success(function(data, status, headers, config) {
 		      $scope.user = data;
 		      if($scope.user ==='' || $scope.user ==undefined || $scope.user.id===0){
@@ -580,7 +580,7 @@ angular.module('iot', ['ionic','chart.js'])
 		});
 	}
 })
-.controller('addUser', function($scope) {
+.controller('addUser', function($scope, $http) {
 	$scope.setFormScope = function(scope){
 		this.formScope = scope;
 	}
@@ -594,12 +594,37 @@ angular.module('iot', ['ionic','chart.js'])
 			alert('Password required');
 			return;
 		}
+		if(!$scope.newuser.userType) {
+			alert('Please Select a User Type');
+			return;
+		}
+		if(!$scope.newuser.phone) {
+			alert('Phone Number required');
+			return;
+		}
+		if(!$scope.newuser.name) {
+			alert('Full name required');
+			return;
+		}
+		//TODO: USER IMAGE UPLOAD
 		if(!$scope.newuser.avatar) {
 			$scope.newuser.avatar = 'img/noavatar.png';
 		}
 		$scope.newuser.lastLogin = 'Last login: never';
-		$scope.newuser.id = $scope.users.length + 1;
-		$scope.users.push($scope.newuser);
+		
+		// Simple POST request example (passing data) :
+		$http.post('http://localhost:8082/Overlord/rest/users?email='+$scope.newuser.email+'&userType='+$scope.newuser.userType+'&username='+$scope.newuser.username+'&password='+$scope.newuser.password+'&phone='+$scope.newuser.phone+'&name='+$scope.newuser.name+'&companyId='+$scope.user.usersCompanyID).
+		  then(function(response) {
+			alert(response.data);
+			// this callback will be called asynchronously
+			// when the response is available
+		  }, function(response) {
+			alert("There was an error creating user, Please try again.");
+			// called asynchronously if an error occurs
+			// or server returns response with an error status.
+		  });
+		
+		
 		this.formScope.addUserForm.$setPristine();
 		var defaultForm = {
 			id : "",
@@ -608,6 +633,7 @@ angular.module('iot', ['ionic','chart.js'])
 			userType: "",
 			email: "",
 			avatar : "",
+			companyId: $scope.user.usersCompanyId,
 			enabled: false
 		};
 		$scope.newuser = defaultForm;
