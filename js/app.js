@@ -690,7 +690,10 @@ angular.module('iot', ['ionic','chart.js'])
 		if(!$scope.newarea.icon) {
 			$scope.newarea.icon = 'ion-log-in';
 		}
-		$scope.areas.push($scope.newarea);
+		
+		//TODO ADD AREA
+
+
 		this.formScope.addAreaForm.$setPristine();
 		var defaultForm = {
 			positionName: '', 
@@ -704,10 +707,23 @@ angular.module('iot', ['ionic','chart.js'])
 		$scope.newarea = defaultForm;
 	};
 })
-.controller('addPosition', function($scope) {
+.controller('addPosition', function($scope, $http) {
 	$scope.setFormScope = function(scope){
 		this.formScope = scope;
 	}
+
+	// Simple GET request example :
+	$http.get('http://overlord.elasticbeanstalk.com/rest/areas').
+	  then(function(response) {
+	  	$scope.areas= response.data;
+	    // this callback will be called asynchronously
+	    // when the response is available
+	  }, function(response) {
+	  	alert("Error retriving areas");
+	    // called asynchronously if an error occurs
+	    // or server returns response with an error status.
+	  });
+
 	$scope.newposition = {};
 	$scope.positionSubmit = function() {
 		if(!$scope.newposition.positionName) {
@@ -715,9 +731,33 @@ angular.module('iot', ['ionic','chart.js'])
 			return;
 		}
 		if(!$scope.newposition.icon) {
-			$scope.newposition.icon = 'ion-alert';
+			$scope.newposition.icon = 'ion-log-in';
 		}
-		$scope.positions.push($scope.newposition);
+		if(!$scope.newposition.positionType){
+			alert('Position type required');
+			return;
+		}
+		if(!$scope.newposition.positionFunction){
+			alert('Position function required');
+			return;
+		}
+		if(!$scope.newposition.areaid){
+			alert('Area required');
+			return;
+		}
+		
+				// Simple POST request example (passing data) :
+		$http.post('http://overlord.elasticbeanstalk.com/rest/positions?positionName='+$scope.newposition.positionName+'&positionType='+$scope.newposition.positionType+'&positionFunction='+$scope.newposition.positionFunction+'&areaId='+$scope.newposition.areaid).
+		  then(function(response) {
+			alert(response.data.positionName +" Created");
+			// this callback will be called asynchronously
+			// when the response is available
+		  }, function(response) {
+			alert("There was an error creating position, Please try again.");
+			// called asynchronously if an error occurs
+			// or server returns response with an error status.
+		  });
+
 		this.formScope.addPositionForm.$setPristine();
 		var defaultForm = {
 			positionName: '', 
