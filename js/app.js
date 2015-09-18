@@ -615,7 +615,12 @@ angular.module('iot', ['ionic','chart.js'])
 		// Simple POST request example (passing data) :
 		$http.post('http://overlord.elasticbeanstalk.com/rest/users?email='+$scope.newuser.email+'&userType='+$scope.newuser.userType+'&username='+$scope.newuser.username+'&password='+$scope.newuser.password+'&phone='+$scope.newuser.phone+'&name='+$scope.newuser.name+'&companyId='+$scope.user.usersCompanyID).
 		  then(function(response) {
-			alert(response.data);
+		 
+			if(response.data.id==0){
+				alert("There was an error creating user, Please try again.");
+			}else{
+				alert(response.data.username +" Created");
+			}
 			// this callback will be called asynchronously
 			// when the response is available
 		  }, function(response) {
@@ -639,10 +644,11 @@ angular.module('iot', ['ionic','chart.js'])
 		$scope.newuser = defaultForm;
 	};
 })
-.controller('addEvent', function($scope) {
+.controller('addEvent', function($scope, $http) {
 	$scope.setFormScope = function(scope){
 		this.formScope = scope;
 	}
+	
 	$scope.newevent = {};
 	$scope.eventSubmit = function() {
 		if(!$scope.newevent.eventName) {
@@ -661,8 +667,23 @@ angular.module('iot', ['ionic','chart.js'])
 			alert('End date required');
 			return;
 		}
-		$scope.newevent.id = $scope.events.length + 2;
-		$scope.events.push($scope.newevent);
+
+		// Simple POST request example (passing data) :
+		$http.post('http://localhost:8082/Overlord/rest/events?eventName='+$scope.newevent.eventName+'&start='+$scope.newevent.start+'&end='+$scope.newevent.end+'&capacity='+$scope.newevent.capacity+'&companyId='+$scope.user.usersCompanyID).
+		  then(function(response) {
+		  if(response.data.id==0){
+			alert("There was an error creating event, Please try again.");
+		  }else{
+			alert(response.data.eventName +" Created");
+		  }
+			// this callback will be called asynchronously
+			// when the response is available
+		  }, function(response) {
+			alert("There was an error creating event, Please try again.");
+			// called asynchronously if an error occurs
+			// or server returns response with an error status.
+		  });
+		
 		this.formScope.addEventForm.$setPristine();
 		var defaultForm = {
 			id : "",
@@ -677,32 +698,59 @@ angular.module('iot', ['ionic','chart.js'])
 		$scope.newevent = defaultForm;
 	};
 })
-.controller('addArea', function($scope) {
+.controller('addArea', function($scope, $http) {
 	$scope.setFormScope = function(scope){
 		this.formScope = scope;
 	}
 	$scope.newarea = {};
+	
+		// Simple GET request example :
+	$http.get('http://overlord.elasticbeanstalk.com/rest/venues').
+	  then(function(response) {
+	  	$scope.venues= response.data;
+	    // this callback will be called asynchronously
+	    // when the response is available
+	  }, function(response) {
+	  	alert("Error retrieving venues");
+	    // called asynchronously if an error occurs
+	    // or server returns response with an error status.
+	  });
+	
 	$scope.areaSubmit = function() {
 		if(!$scope.newarea.areaName) {
 			alert('Name required');
 			return;
 		}
-		if(!$scope.newarea.icon) {
-			$scope.newarea.icon = 'ion-log-in';
+		if(!$scope.newarea.capacity) {
+			alert('Capacity required');
+			return;
+		}
+		if(!$scope.newarea.venueid) {
+			alert('Venue required');
+			return;
 		}
 		
-		//TODO ADD AREA
-
+		// Simple POST request example (passing data) :
+		$http.post('http://overlord.elasticbeanstalk.com/rest/areas?areaName='+$scope.newarea.areaName+'&capacity='+$scope.newarea.capacity+'&venueId='+$scope.newarea.venueid).
+		  then(function(response) {
+		  if(response.data.id==0){
+			alert("There was an error creating area, Please try again.");
+		  }else{
+			alert(response.data.areaName +" Created");
+		  }
+			// this callback will be called asynchronously
+			// when the response is available
+		  }, function(response) {
+			alert("There was an error creating area, Please try again.");
+			// called asynchronously if an error occurs
+			// or server returns response with an error status.
+		  });
 
 		this.formScope.addAreaForm.$setPristine();
 		var defaultForm = {
-			positionName: '', 
-			positionFunction: '',
-			positionType: '', 
-			icon: 'ion-log-in',
-			entryCount: "0",
-			exitCount: "0",
-			enabled: false
+			areaName: '', 
+			capacity: '',
+			venueid: ''
 		};
 		$scope.newarea = defaultForm;
 	};
@@ -749,7 +797,11 @@ angular.module('iot', ['ionic','chart.js'])
 				// Simple POST request example (passing data) :
 		$http.post('http://overlord.elasticbeanstalk.com/rest/positions?positionName='+$scope.newposition.positionName+'&positionType='+$scope.newposition.positionType+'&positionFunction='+$scope.newposition.positionFunction+'&areaId='+$scope.newposition.areaid).
 		  then(function(response) {
+		  if(response.data.id==0){
+			alert("There was an error creating position, Please try again.");
+		  }else{
 			alert(response.data.positionName +" Created");
+		  }
 			// this callback will be called asynchronously
 			// when the response is available
 		  }, function(response) {
@@ -766,15 +818,29 @@ angular.module('iot', ['ionic','chart.js'])
 			icon: 'ion-log-in',
 			entryCount: "0",
 			exitCount: "0",
-			enabled: false
+			enabled: true
 		};
 		$scope.newposition = defaultForm;
 	};
 })
-.controller('addVenue', function($scope) {
+.controller('addVenue', function($scope, $http) {
 	$scope.setFormScope = function(scope){
 		this.formScope = scope;
 	}
+	
+	// Simple GET request example :
+	$http.get('http://overlord.elasticbeanstalk.com/rest/events').
+	  then(function(response) {
+	  	$scope.events= response.data;
+	    // this callback will be called asynchronously
+	    // when the response is available
+	  }, function(response) {
+	  	alert("Error retriving events");
+	    // called asynchronously if an error occurs
+	    // or server returns response with an error status.
+	  });
+	
+	
 	$scope.newvenue = {};
 	$scope.venueSubmit = function() {
 		if(!$scope.newvenue.venueName) {
@@ -789,7 +855,23 @@ angular.module('iot', ['ionic','chart.js'])
 			alert('Event required');
 			return;
 		}
-		$scope.venues.push($scope.newvenue);
+
+		// Simple POST request example (passing data) :
+		$http.post('http://overlord.elasticbeanstalk.com/rest/venues?venueName='+$scope.newvenue.venueName+'&capacity='+$scope.newvenue.capacity+'&eventId='+$scope.newvenue.eventId).
+		  then(function(response) {
+		  if(response.data.id==0){
+			alert("There was an error creating venue, Please try again.");
+		  }else{
+			alert(response.data.venueName +" Created");
+		  }
+			// this callback will be called asynchronously
+			// when the response is available
+		  }, function(response) {
+			alert("There was an error creating venue, Please try again.");
+			// called asynchronously if an error occurs
+			// or server returns response with an error status.
+		  });
+		
 		this.formScope.addVenueForm.$setPristine();
 		var defaultForm = {
 			capacity : "",
