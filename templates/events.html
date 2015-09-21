@@ -1,13 +1,13 @@
 <ion-view title="Overlord" ng-controller="EventCtrl">
 	<ion-content class="padding-vertical">
 		<div ng-repeat="event in events">
-			<a href="#/route/dashboard/home">
+			<a ng-href="#/route/dashboard/home?eventId={{event.id}}">
 				<div class="col-lg-50">
 					<div class="item item-icon-left" href="#">
 						<i class="icon" ng-class="event.icon"></i>
-						{{ event.name }}
+						{{ event.eventName }}
 						<span class="item-note">
-						{{ event.note }}
+						{{ event.description | limitTo: 20 }}{{event.description.length > 20 ? '...' : ''}}
 						</span>
 					</div>
 				</div>

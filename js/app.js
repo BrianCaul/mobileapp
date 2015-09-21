@@ -22,7 +22,8 @@ angular.module('iot', ['ionic','chart.js'])
 	  cache: false,
       views: {
         'home-tab' :{
-          templateUrl: "templates/home.html"
+          templateUrl: "templates/home.html",
+		  controller: 'MainCtrl'
         }
       }
     })
@@ -31,7 +32,9 @@ angular.module('iot', ['ionic','chart.js'])
 	  cache: false,
       views: {
         'areas-tab' :{
-          templateUrl: "templates/areas.html"
+          templateUrl: "templates/areas.html",
+		  controller: 'MainCtrl'
+		  
         }
       }
     })
@@ -40,7 +43,8 @@ angular.module('iot', ['ionic','chart.js'])
 	  cache: false,
       views: {
         'settings-tab' :{
-          templateUrl: "templates/settings.html"
+          templateUrl: "templates/settings.html",
+		  controller: 'MainCtrl'
         }
       }
     })
@@ -49,7 +53,8 @@ angular.module('iot', ['ionic','chart.js'])
 	  cache: false,
       views: {
         'charts-tab' :{
-          templateUrl: "templates/charts.html"
+          templateUrl: "templates/charts.html",
+		  controller: 'MainCtrl'
         }
       }
     })
@@ -67,7 +72,8 @@ angular.module('iot', ['ionic','chart.js'])
 	  cache: false,
       views: {
         'menuContent' :{
-          templateUrl: "templates/position-single.html"
+          templateUrl: "templates/position-single.html",
+		  controller: 'PositionCtrl'
         }
       }
     })
@@ -152,15 +158,36 @@ angular.module('iot', ['ionic','chart.js'])
     })
   $urlRouterProvider.otherwise("/intro");
 })
-.controller('MainCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout, $window, $location, SideMenuSwitcher) {
+.controller('MainCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout, $window, $location, SideMenuSwitcher, $http) {
 	$scope.leftSide = SideMenuSwitcher.leftSide;
 	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
-	$scope.users = [
-		{ username: 'Admin', email: 'admin@test.domain', location: true, id: 'admin', avatar: 'img/men.jpg', enabled: 'true', lastLogin: 'Online', userType: 'Event Manager' },
-		{ username: 'Anna', email: 'anna@test.domain', location: true, id: 'anna', avatar: 'img/girl.jpg', enabled: 'true', lastLogin: 'Last login: 01/09/2014' , userType: 'Supervisor' },
-		{ username: 'Paul', email: 'paul@test.domain', location: false, id: 'paul', avatar: 'img/noavatar.png', enabled: 'false', lastLogin: 'Last login: never' , userType: 'Attendant' },
-		{ username: 'Mary', email: 'mary@test.domain', location: false, id: 'mary', avatar: 'img/noavatar.png', enabled: 'true', lastLogin: 'Last login: never' , userType: 'Attendant' },
-	];
+	
+	$scope.companyId = $scope.user.usersCompanyID;
+	// Simple GET request example :
+	$scope.company = JSON.parse(window.localStorage['company'] || '{}');
+	if(!$scope.company.id){
+		$http.get('http://overlord.elasticbeanstalk.com/rest/companies/'+$scope.companyId).
+		  then(function(response) {
+			$scope.company= response.data;
+			window.localStorage['company'] = JSON.stringify($scope.company);
+			$scope.users = $scope.company.users;
+			// this callback will be called asynchronously
+			// when the response is available
+		  }, function(response) {
+			alert("Error retrieving company");
+			// called asynchronously if an error occurs
+			// or server returns response with an error status.
+		  });
+	  }
+	
+	
+	
+	//[
+		//{ userName: 'Admin', email: 'admin@test.domain', location: true, id: '1', avatar: 'img/men.jpg', enabled: 'true', lastLogin: 'Online', userType: 'Event Manager' },
+		//{ userName: 'Anna', email: 'anna@test.domain', location: true, id: '71', avatar: 'img/girl.jpg', enabled: 'true', lastLogin: 'Last login: 01/09/2014' , userType: 'Supervisor' },
+		//{ userName: 'Paul', email: 'paul@test.domain', location: false, id: '3', avatar: 'img/noavatar.png', enabled: 'false', lastLogin: 'Last login: never' , userType: 'Attendant' },
+		//{ userName: 'Mary', email: 'mary@test.domain', location: false, id: '4', avatar: 'img/noavatar.png', enabled: 'true', lastLogin: 'Last login: never' , userType: 'Attendant' },
+	//];
 	
 	$scope.userTypes = [
 		{ name: 'Event Manager', id: 'Event Manager' },
@@ -186,48 +213,58 @@ angular.module('iot', ['ionic','chart.js'])
 		{ id: '3',  venueName: 'New Venue 3', capacity: '20', eventId: '' },
 	];
 
-	$scope.position = { id: null, positionName: 'New Position', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false },
 	$scope.positions = [
-		{ id: '1', positionName: 'New Position 1', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false },
-		{ id: '2', positionName: 'New Position 2', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false  },
-		{ id: '3', positionName: 'New Position 3', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false },
+		{ id: '3', positionName: 'New Position 1', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false },
+		{ id: '4', positionName: 'New Position 2', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false  },
+		{ id: '5', positionName: 'New Position 3', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false },
 	];
-	$scope.event = { id: null, eventName: 'Event 1', icon: 'ion-log-in', note: 'Test event 1', resetEnabled: true, start: '', end: '', reset:'' },
-	$scope.events = [
-		{ id: '1', eventName: 'Event 1', icon: 'ion-log-in', note: 'Test event 1', resetEnabled: true, start: '', end: '', reset:'' },
-		{ id: '2', eventName: 'Event 2', icon: 'ion-log-in', note: 'Test event 2 description', resetEnabled: true, start: '', end: '', reset:'' },
-	];
+	$scope.event = { id: null, eventName: 'Event 1', icon: 'ion-log-in', description: 'Test event 1', resetEnabled: true, start: '', end: '', reset:'' },
+	
+	$scope.eventIDD = $location.search().eventId;
+	// Simple GET request example :
+	$http.get('http://overlord.elasticbeanstalk.com/rest/events/'+$scope.eventIDD).
+	  then(function(response) {
+	  	$scope.event= response.data;
+		
+	    // this callback will be called asynchronously
+	    // when the response is available
+	  }, function(response) {
+	  	alert("Error retrieving event");
+	    // called asynchronously if an error occurs
+	    // or server returns response with an error status.
+	  });
+	
 	$scope.areas = [
 		{ id: '1', name: 'Overall Event', type: "range", value: '68', minValue : "0", maxValue : "250", units: " Visitors", iconBefore: 'ion-unlocked', iconAfter: 'ion-locked', positionSelect : "", script: "", featured: true, 
 			positions : []
 		},
 		{ id: '2', name: 'Main Hall', type: "range", value: '24', minValue : "0", maxValue : "250", units: " Visitors", iconBefore: 'ion-unlocked', iconAfter: 'ion-locked', positionSelect : "", script: "", featured: false,
 			positions : [
-			{ id: '1', positionName: 'VIP Door', icon: 'ion-log-in', positionFunction: 'Entry/Exit', enabled: true, positionType: 'External', entryCount: "21", exitCount: "2" , 
+			{ id: '3', positionName: 'VIP Door', icon: 'ion-log-in', positionFunction: 'Entry/Exit', enabled: true, positionType: 'External', entryCount: "21", exitCount: "2" , 
 				users : [
-					{ username: 'Paul', email: 'paul@test.domain', location: false, id: 'paul', avatar: 'img/noavatar.png', enabled: 'false', lastLogin: 'Last login: never' , userType: 'Attendant' },
-					{ username: 'Mary', email: 'mary@test.domain', location: false, id: 'mary', avatar: 'img/noavatar.png', enabled: 'true', lastLogin: 'Last login: never' , userType: 'Attendant' },
+					{ userName: 'Paul', email: 'paul@test.domain', location: false, id: '1', avatar: 'img/noavatar.png', enabled: 'false', lastLogin: 'Last login: never' , userType: 'Attendant' },
+					{ userName: 'Mary', email: 'mary@test.domain', location: false, id: '2', avatar: 'img/noavatar.png', enabled: 'true', lastLogin: 'Last login: never' , userType: 'Attendant' },
 				]  
 			},
-			{ id: '2', positionName: 'General Entrance', icon: 'ion-log-in', positionFunction: 'Entry Only', color: 'balanced', enabled: true, positionType: 'External', entryCount: "124", exitCount :"0" },
-			{ id: '3', positionName: 'General Exit', icon: 'ion-log-in', positionFunction: 'Exit Only', color: 'assertive', enabled: true, positionType: 'External', entryCount: "0", exitCount: "12" }]
+			{ id: '4', positionName: 'General Entrance', icon: 'ion-log-in', positionFunction: 'Entry Only', color: 'balanced', enabled: true, positionType: 'External', entryCount: "124", exitCount :"0" },
+			{ id: '5', positionName: 'General Exit', icon: 'ion-log-in', positionFunction: 'Exit Only', color: 'assertive', enabled: true, positionType: 'External', entryCount: "0", exitCount: "12" }]
 		},
 		{ id: '3', name: 'Bar Area', type: "range", value: '40', minValue : "0", maxValue : "100", units: " Visitors", iconBefore: 'ion-unlocked', iconAfter: 'ion-locked', positionSelect : "", script: "", featured: false, 
 			positions : [
-			{ id: '1', positionName: 'General Entrance', icon: 'ion-log-in', positionFunction: 'Entry Only', color: 'balanced', enabled: true, positionType: 'Internal', entryCount: "29", exitCount :"0", 
+			{ id: '6', positionName: 'General Entrance', icon: 'ion-log-in', positionFunction: 'Entry Only', color: 'balanced', enabled: true, positionType: 'Internal', entryCount: "29", exitCount :"0", 
 				users : [
-					{ username: 'Paul', email: 'paul@test.domain', location: false, id: 'paul', avatar: 'img/noavatar.png', enabled: 'false', lastLogin: 'Last login: never' , userType: 'Attendant' },
-					{ username: 'Mary', email: 'mary@test.domain', location: false, id: 'mary', avatar: 'img/noavatar.png', enabled: 'true', lastLogin: 'Last login: never' , userType: 'Attendant' },
+					{ userName: 'Paul', email: 'paul@test.domain', location: false, id: '1', avatar: 'img/noavatar.png', enabled: 'false', lastLogin: 'Last login: never' , userType: 'Attendant' },
+					{ userName: 'Mary', email: 'mary@test.domain', location: false, id: '2', avatar: 'img/noavatar.png', enabled: 'true', lastLogin: 'Last login: never' , userType: 'Attendant' },
 				]  
 			},
-			{ id: '2', positionName: 'General Exit', icon: 'ion-log-in', positionFunction: 'Exit Only', color: 'assertive', enabled: true, positionType: 'Internal', entryCount: "0", exitCount: "24"  }]
+			{ id: '3', positionName: 'General Exit', icon: 'ion-log-in', positionFunction: 'Exit Only', color: 'assertive', enabled: true, positionType: 'Internal', entryCount: "0", exitCount: "24"  }]
 		},
 	];
 	$scope.toggleLeft = function() {
 		$ionicSideMenuDelegate.toggleLeft();
 	};
 	$scope.positionTap = function(route, position) {
-		$scope.position = position;
+		window.localStorage['position'] = JSON.stringify(position);
 		$state.go(route);
 	};
 	$ionicPopover.fromTemplateUrl('templates/alerts.html', {
@@ -248,15 +285,10 @@ angular.module('iot', ['ionic','chart.js'])
 		ionic.EventController.trigger("resize", "", true, false);
 	}, 1500);
 })
-.controller('EventCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout, $window, $location, SideMenuSwitcher) {
+.controller('EventCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout, $window, $location, SideMenuSwitcher, $http) {
+
 	$scope.leftSide = SideMenuSwitcher.leftSide;
 	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
-	$scope.users = [
-		{ username: 'Admin', email: 'admin@test.domain', location: true, id: 'admin', avatar: 'img/men.jpg', enabled: 'true', lastLogin: 'Online', userType: 'Event Manager' },
-		{ username: 'Anna', email: 'anna@test.domain', location: true, id: 'anna', avatar: 'img/girl.jpg', enabled: 'true', lastLogin: 'Last login: 01/09/2014' , userType: 'Supervisor' },
-		{ username: 'Paul', email: 'paul@test.domain', location: false, id: 'paul', avatar: 'img/noavatar.png', enabled: 'false', lastLogin: 'Last login: never' , userType: 'Attendant' },
-		{ username: 'Mary', email: 'mary@test.domain', location: false, id: 'mary', avatar: 'img/noavatar.png', enabled: 'true', lastLogin: 'Last login: never' , userType: 'Attendant' },
-	];
 	
 	$scope.userTypes = [
 		{ name: 'Event Manager', id: 'Event Manager' },
@@ -282,48 +314,61 @@ angular.module('iot', ['ionic','chart.js'])
 		{ id: '3',  venueName: 'New Venue 3', capacity: '20', eventId: '' },
 	];
 
-	$scope.position = { id: null, positionName: 'New Position', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false },
 	$scope.positions = [
-		{ id: '1', positionName: 'New Position 1', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false },
-		{ id: '2', positionName: 'New Position 2', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false  },
-		{ id: '3', positionName: 'New Position 3', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false },
+		{ id: '3', positionName: 'New Position 1', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false },
+		{ id: '4', positionName: 'New Position 2', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false  },
+		{ id: '5', positionName: 'New Position 3', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false },
 	];
-	$scope.event = { id: null, eventName: 'Event 1', icon: 'ion-log-in', note: 'Test event 1', resetEnabled: true, start: '', end: '', reset:'' },
-	$scope.events = [
-		{ id: '1', eventName: 'Event 1', icon: 'ion-log-in', note: 'Test event 1', resetEnabled: true, start: '', end: '', reset:'' },
-		{ id: '2', eventName: 'Event 2', icon: 'ion-log-in', note: 'Test event 2 description', resetEnabled: true, start: '', end: '', reset:'' },
-	];
+	$scope.event = { id: null, eventName: 'Event 1', icon: 'ion-log-in', description: 'Test event 1', resetEnabled: true, start: '', end: '', reset:'' },
+		// Simple GET request example :
+	$http.get('http://overlord.elasticbeanstalk.com/rest/events').
+	  then(function(response) {
+	  	$scope.events= response.data;
+		
+		var event;
+		for (var i =0; i < $scope.events.length; i++) {
+			$scope.events[i].icon  = "ion-log-in";
+			$scope.events[i].resetEnabled  = false;
+		}
+		
+	    // this callback will be called asynchronously
+	    // when the response is available
+	  }, function(response) {
+	  	alert("Error retrieving events");
+	    // called asynchronously if an error occurs
+	    // or server returns response with an error status.
+	  });
 	$scope.areas = [
 		{ id: '1', name: 'Overall Event', type: "range", value: '68', minValue : "0", maxValue : "250", units: " Visitors", iconBefore: 'ion-unlocked', iconAfter: 'ion-locked', positionSelect : "", script: "", featured: true, 
 			positions : []
 		},
 		{ id: '2', name: 'Main Hall', type: "range", value: '24', minValue : "0", maxValue : "250", units: " Visitors", iconBefore: 'ion-unlocked', iconAfter: 'ion-locked', positionSelect : "", script: "", featured: false,
 			positions : [
-			{ id: '1', positionName: 'VIP Door', icon: 'ion-log-in', positionFunction: 'Entry/Exit', enabled: true, positionType: 'External', entryCount: "21", exitCount: "2" , 
+			{ id: '3', positionName: 'VIP Door', icon: 'ion-log-in', positionFunction: 'Entry/Exit', enabled: true, positionType: 'External', entryCount: "21", exitCount: "2" , 
 				users : [
-					{ username: 'Paul', email: 'paul@test.domain', location: false, id: 'paul', avatar: 'img/noavatar.png', enabled: 'false', lastLogin: 'Last login: never' , userType: 'Attendant' },
-					{ username: 'Mary', email: 'mary@test.domain', location: false, id: 'mary', avatar: 'img/noavatar.png', enabled: 'true', lastLogin: 'Last login: never' , userType: 'Attendant' },
+					{ userName: 'Paul', email: 'paul@test.domain', location: false, id: '1', avatar: 'img/noavatar.png', enabled: 'false', lastLogin: 'Last login: never' , userType: 'Attendant' },
+					{ userName: 'Mary', email: 'mary@test.domain', location: false, id: '2', avatar: 'img/noavatar.png', enabled: 'true', lastLogin: 'Last login: never' , userType: 'Attendant' },
 				]  
 			},
-			{ id: '2', positionName: 'General Entrance', icon: 'ion-log-in', positionFunction: 'Entry Only', color: 'balanced', enabled: true, positionType: 'External', entryCount: "124", exitCount :"0" },
-			{ id: '3', positionName: 'General Exit', icon: 'ion-log-in', positionFunction: 'Exit Only', color: 'assertive', enabled: true, positionType: 'External', entryCount: "0", exitCount: "12" }]
+			{ id: '4', positionName: 'General Entrance', icon: 'ion-log-in', positionFunction: 'Entry Only', color: 'balanced', enabled: true, positionType: 'External', entryCount: "124", exitCount :"0" },
+			{ id: '5', positionName: 'General Exit', icon: 'ion-log-in', positionFunction: 'Exit Only', color: 'assertive', enabled: true, positionType: 'External', entryCount: "0", exitCount: "12" }]
 		},
 		{ id: '3', name: 'Bar Area', type: "range", value: '40', minValue : "0", maxValue : "100", units: " Visitors", iconBefore: 'ion-unlocked', iconAfter: 'ion-locked', positionSelect : "", script: "", featured: false, 
 			positions : [
-			{ id: '1', positionName: 'General Entrance', icon: 'ion-log-in', positionFunction: 'Entry Only', color: 'balanced', enabled: true, positionType: 'Internal', entryCount: "29", exitCount :"0", 
+			{ id: '3', positionName: 'General Entrance', icon: 'ion-log-in', positionFunction: 'Entry Only', color: 'balanced', enabled: true, positionType: 'Internal', entryCount: "29", exitCount :"0", 
 				users : [
-					{ username: 'Paul', email: 'paul@test.domain', location: false, id: 'paul', avatar: 'img/noavatar.png', enabled: 'false', lastLogin: 'Last login: never' , userType: 'Attendant' },
-					{ username: 'Mary', email: 'mary@test.domain', location: false, id: 'mary', avatar: 'img/noavatar.png', enabled: 'true', lastLogin: 'Last login: never' , userType: 'Attendant' },
+					{ userName: 'Paul', email: 'paul@test.domain', location: false, id: '1', avatar: 'img/noavatar.png', enabled: 'false', lastLogin: 'Last login: never' , userType: 'Attendant' },
+					{ userName: 'Mary', email: 'mary@test.domain', location: false, id: '2', avatar: 'img/noavatar.png', enabled: 'true', lastLogin: 'Last login: never' , userType: 'Attendant' },
 				]  
 			},
-			{ id: '2', positionName: 'General Exit', icon: 'ion-log-in', positionFunction: 'Exit Only', color: 'assertive', enabled: true, positionType: 'Internal', entryCount: "0", exitCount: "24"  }]
+			{ id: '6', positionName: 'General Exit', icon: 'ion-log-in', positionFunction: 'Exit Only', color: 'assertive', enabled: true, positionType: 'Internal', entryCount: "0", exitCount: "24"  }]
 		},
 	];
 	$scope.toggleLeft = function() {
 		$ionicSideMenuDelegate.toggleLeft();
 	};
 	$scope.positionTap = function(route, position) {
-		$scope.position = position;
+		window.localStorage['position'] = JSON.stringify(position);
 		$state.go(route);
 	};
 	$ionicPopover.fromTemplateUrl('templates/alerts.html', {
@@ -669,7 +714,7 @@ angular.module('iot', ['ionic','chart.js'])
 		}
 
 		// Simple POST request example (passing data) :
-		$http.post('http://localhost:8082/Overlord/rest/events?eventName='+$scope.newevent.eventName+'&start='+$scope.newevent.start+'&end='+$scope.newevent.end+'&capacity='+$scope.newevent.capacity+'&companyId='+$scope.user.usersCompanyID).
+		$http.post('http://overlord.elasticbeanstalk.com/rest/events?eventName='+$scope.newevent.eventName+'&description='+$scope.newevent.description +'&start='+$scope.newevent.start+'&end='+$scope.newevent.end+'&capacity='+$scope.newevent.capacity+'&companyId='+$scope.user.usersCompanyID).
 		  then(function(response) {
 		  if(response.data.id==0){
 			alert("There was an error creating event, Please try again.");
@@ -688,7 +733,7 @@ angular.module('iot', ['ionic','chart.js'])
 		var defaultForm = {
 			id : "",
 			eventName : "",
-			note : "",
+			description : "",
 			capacity: "",
 			start: "",
 			end: "0", 
@@ -898,6 +943,46 @@ angular.module('iot', ['ionic','chart.js'])
 
 	$scope.exitSubmit = function() {
 		$scope.attendantposition.entryCount = $scope.attendantposition.entryCount -1;
+	};
+})
+.controller('PositionCtrl', function($scope, $state, $location, SideMenuSwitcher, $http) {
+	$scope.leftSide = SideMenuSwitcher.leftSide;
+	$scope.position = JSON.parse(window.localStorage['position'] || '{}');
+	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
+	//Get Users Positions
+	$scope.setFormScope = function(scope){
+		this.formScope = scope;
+	}
+	
+	$scope.newuserposition = {};
+	$scope.addUserPositionSubmit = function() {
+		if(!$scope.newuserposition.userid) {
+			alert('Please select a user');
+			return;
+		}
+
+		// Simple POST request example (passing data) :
+		$http.post('http://overlord.elasticbeanstalk.com/rest/users/'+$scope.newuserposition.userid+'/setposition?positionId='+$scope.position.id).
+		  then(function(response) {
+		  if(response.data.id==0){
+			alert("There was an error assigning the position, Please try again.");
+		  }else{
+			$scope.position.users.push(response.data);
+			alert("User Assigned to Position");
+		  }
+			// this callback will be called asynchronously
+			// when the response is available
+		  }, function(response) {
+			alert("There was an error assigning the position, Please try again.");
+			// called asynchronously if an error occurs
+			// or server returns response with an error status.
+		  });
+		
+		this.formScope.addUserToPositionForm.$setPristine();
+		var defaultForm = {
+			userid : ""
+		};
+		$scope.newuserposition = defaultForm;
 	};
 })
 .factory('SideMenuSwitcher', function ($rootScope) {
