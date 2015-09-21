@@ -1,16 +1,16 @@
 <ion-view title="Overlord">	
 	<ion-content>
-				<div ng-repeat="area in areas | filter: { featured: false}">
+				<div ng-repeat="area in areas">
 			<div class="col-lg-100 padding-horizontal" style="margin-top:10px;">
-				<li ng-if="area.type === 'range'" class="item">
-					{{ area.name }}
+				<li class="item">
+					{{ area.areaName }}
 					<span class="item-note">
-						{{ area.value }} / {{area.maxValue}} {{ area.units }} ( {{(area.value / area.maxValue) * 100 | number:0}}% )
+						{{ area.value }} / {{area.capacity}} Visitors ( {{(area.value / area.capacity) * 100 | number:0}}% )
 					</span>
 				</li>
-				<div ng-if="area.type === 'range'" class="item range range-balanced">
+				<div class="item range range-balanced">
 					<i class="icon" ng-class="area.iconBefore"></i>
-					<input type="range" ng-model="area.value" name="{{ area.id }}_action" min="{{ area.minValue }}" max="{{ area.maxValue }}">
+					<input type="range" ng-model="area.value" name="{{ area.id }}_action" min="0" max="{{ area.capacity }}">
 					<i class="icon" ng-class="area.iconAfter"></i>
 				</div>
 						<div class="clearfix"></div>
@@ -19,11 +19,11 @@
 							Positions
 							</div>
 						</div>
-						<div ng-repeat="position in area.positions | filter: { enabled: true}">
+						<div ng-repeat="position in area.positions">
 							<div class="col-lg-50 padding-horizontal">
 								<div class="item item-icon-left" on-tap="positionTap('router.position', position)">
 									<i class="icon" ng-class="position.icon"></i>
-									{{ position.positionName }} : {{position.entryCount}}
+									{{ position.positionName }} : {{position.numVisitors}}
 									<span class="item-note" ng-class="position.color">
 									{{ position.positionFunction }}
 									</span>

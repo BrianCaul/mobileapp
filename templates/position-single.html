@@ -27,13 +27,13 @@
 				<div class="item item-divider">
 				Attendants
 				</div>
-				<div ng-repeat="user in position.users">
+				<div ng-repeat="user in position.attendants">
 						<div class="col-lg-100" on-hold="userHold(user)">
 							<div class="card">
 								<div class="item item-avatar">
 									<img ng-src="{{user.avatar}}">
-									<h2>{{ user.userName }}</h2>
-									<p>{{user.lastLogin}} <span ng-show="user.lastLogin == 'Online'" class="balanced">&bull;</span></p>
+									<h2>{{ user.name }}</h2>
+									<p>{{user.lastLogin | date:'short'}}</p>
 								</div>
 								<ul class="list">
 									<li class="item item-toggle">
