@@ -926,23 +926,92 @@ angular.module('iot', ['ionic','chart.js'])
 		$scope.newvenue = defaultForm;
 	};
 })
-.controller('AttendantController', function($scope, $state, $location, SideMenuSwitcher) {
+.controller('AttendantController', function($scope, $state, $location, SideMenuSwitcher, $http) {
 	$scope.leftSide = SideMenuSwitcher.leftSide;
 	
 	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
-	//Get Users Positions
+	$scope.positionId = $scope.user.usersPositionID;
+	
 	$scope.setFormScope = function(scope){
 		this.formScope = scope;
 	}
 	
-	$scope.attendantposition = { id: 1, positionName: 'New Position', positionFunction: 'Entry/Exit', positionType: 'External', icon: 'ion-log-in', entryCount: 10, exitCount: "0", enabled: true },
+	//TODO: Call this or simplified version in order to get position count before each clicker event. Allow for multiple doormen.
+	$http.get('http://overlord.elasticbeanstalk.com/rest/positions/'+$scope.positionId).
+		  then(function(response) {
+			$scope.attendantposition= response.data;
+			$scope.attendantposition.icon ='ion-log-in';
+			
+			if($scope.attendantposition.positionFunction =='In'){
+				$scope.attendantposition.positionFunction = 'Entry Only';
+				$scope.attendantposition.color ='balanced';
+			}
+			if($scope.attendantposition.positionFunction =='Out'){
+				$scope.attendantposition.positionFunction = 'Exit Only';
+				$scope.attendantposition.color ='assertive';
+			}
+			if($scope.attendantposition.positionFunction =='Both'){
+				$scope.attendantposition.positionFunction = 'Entry/Exit';
+			}
+			// this callback will be called asynchronously
+			// when the response is available
+		  }, function(response) {
+			alert("Error retrieving position");
+			// called asynchronously if an error occurs
+			// or server returns response with an error status.
+		  });
 	
 	$scope.entrySubmit = function() {
-		$scope.attendantposition.entryCount = $scope.attendantposition.entryCount +1;
+	if($scope.attendantposition.positionFunction != 'Exit Only'){
+		$scope.attendantposition.numVisitors = $scope.attendantposition.numVisitors +1;
+		
+		$http.post('http://overlord.elasticbeanstalk.com/rest/positions/'+$scope.attendantposition.id+'/enter?numVisitors='+$scope.attendantposition.numVisitors).
+		  then(function(response) {
+			if(response.data !='Entry Successful'){
+				if($scope.attendantposition.numVisitors >0){
+					$scope.attendantposition.numVisitors = $scope.attendantposition.numVisitors -1;
+				}
+				alert(response.data);
+			}
+			// this callback will be called asynchronously
+			// when the response is available
+		  }, function(response) {
+			alert("There was an error entering the position, Please try again.");
+			// called asynchronously if an error occurs
+			// or server returns response with an error status.
+		  });
+		  
+	}else{
+		alert("Exit Only");
+	}
 	};
 
 	$scope.exitSubmit = function() {
-		$scope.attendantposition.entryCount = $scope.attendantposition.entryCount -1;
+	if($scope.attendantposition.positionFunction != 'Entry Only'){
+	
+		if($scope.attendantposition.numVisitors > 0){
+	
+		$scope.attendantposition.numVisitors = $scope.attendantposition.numVisitors -1;
+				$http.post('http://localhost:8082/Overlord/rest/positions/'+$scope.attendantposition.id+'/exit?numVisitors='+$scope.attendantposition.numVisitors).
+		  then(function(response) {
+			if(response.data !='Exit Successful'){
+				$scope.attendantposition.numVisitors = $scope.attendantposition.numVisitors +1;
+				alert(response.data);
+			}
+			// this callback will be called asynchronously
+			// when the response is available
+		  }, function(response) {
+			alert("There was an error entering the position, Please try again.");
+			// called asynchronously if an error occurs
+			// or server returns response with an error status.
+		  });
+		  }
+		  else{
+			alert("Area is empty");
+		  }
+	}else{
+		alert("Entrance Only");
+	}
 	};
 })
 .controller('PositionCtrl', function($scope, $state, $location, SideMenuSwitcher, $http) {
