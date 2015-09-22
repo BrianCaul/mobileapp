@@ -165,7 +165,7 @@ angular.module('iot', ['ionic','chart.js'])
 	$scope.eventIDD = window.localStorage['eventID'];
 	$scope.companyId = $scope.user.usersCompanyID;
 	// Simple GET request example :
-		$http.get('http://localhost:8080/Overlord/rest/companies/'+$scope.companyId).
+		$http.get('http://overlord.elasticbeanstalk.com/rest/companies/'+$scope.companyId).
 		  then(function(response) {
 			$scope.company= response.data;
 			window.localStorage['company'] = JSON.stringify($scope.company);
@@ -215,7 +215,7 @@ angular.module('iot', ['ionic','chart.js'])
 	}
 	// Simple GET request example :
 	if($scope.eventIDD !=null && $scope.eventIDD !='undefined'){
-	$http.get('http://localhost:8080/Overlord/rest/events/'+$scope.eventIDD).
+	$http.get('http://overlord.elasticbeanstalk.com/rest/events/'+$scope.eventIDD).
 	  then(function(response) {
 	  	$scope.event= response.data;
 		$scope.areas = [];
@@ -324,7 +324,7 @@ angular.module('iot', ['ionic','chart.js'])
 		{ id: '5', positionName: 'New Position 3', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false },
 	];
 		// Simple GET request example :
-	$http.get('http://localhost:8080/Overlord/rest/events').
+	$http.get('http://overlord.elasticbeanstalk.com/rest/events').
 	  then(function(response) {
 	  	$scope.events= response.data;
 		
@@ -375,7 +375,7 @@ angular.module('iot', ['ionic','chart.js'])
 		$ionicLoading.show({
 		  template: 'Logging in...'
 		});
-		$http.post('http://localhost:8080/Overlord/rest/users/signin?uname='+ $scope.cred.username +'&pass='+$scope.cred.password).
+		$http.post('http://overlord.elasticbeanstalk.com/rest/users/signin?uname='+ $scope.cred.username +'&pass='+$scope.cred.password).
 		    success(function(data, status, headers, config) {
 		      $scope.user = data;
 		      if($scope.user ==='' || $scope.user ==undefined || $scope.user.id===0){
@@ -559,7 +559,7 @@ angular.module('iot', ['ionic','chart.js'])
 .controller('Users', function($scope, $ionicActionSheet, $http) {
 
 		// Simple GET request example :
-		$http.get('http://localhost:8080/Overlord/rest/companies/'+$scope.companyId).
+		$http.get('http://overlord.elasticbeanstalk.com/rest/companies/'+$scope.companyId).
 		  then(function(response) {
 			$scope.company= response.data;
 			window.localStorage['company'] = JSON.stringify($scope.company);
@@ -650,7 +650,7 @@ angular.module('iot', ['ionic','chart.js'])
 		$scope.newuser.lastLogin = 'Last login: never';
 		
 		// Simple POST request example (passing data) :
-		$http.post('http://localhost:8080/Overlord/rest/users?email='+$scope.newuser.email+'&userType='+$scope.newuser.userType+'&username='+$scope.newuser.username+'&password='+$scope.newuser.password+'&phone='+$scope.newuser.phone+'&name='+$scope.newuser.name+'&companyId='+$scope.user.usersCompanyID).
+		$http.post('http://overlord.elasticbeanstalk.com/rest/users?email='+$scope.newuser.email+'&userType='+$scope.newuser.userType+'&username='+$scope.newuser.username+'&password='+$scope.newuser.password+'&phone='+$scope.newuser.phone+'&name='+$scope.newuser.name+'&companyId='+$scope.user.usersCompanyID).
 		  then(function(response) {
 		 	if(response.data ==='Error creating user'){
 		 		alert("There was an error creating user, Please try again.");
@@ -705,7 +705,7 @@ angular.module('iot', ['ionic','chart.js'])
 		}
 
 		// Simple POST request example (passing data) :
-		$http.post('http://localhost:8080/Overlord/rest/events?eventName='+$scope.newevent.eventName+'&description='+$scope.newevent.description +'&start='+$scope.newevent.start+'&end='+$scope.newevent.end+'&capacity='+$scope.newevent.capacity+'&companyId='+$scope.user.usersCompanyID).
+		$http.post('http://overlord.elasticbeanstalk.com/rest/events?eventName='+$scope.newevent.eventName+'&description='+$scope.newevent.description +'&start='+$scope.newevent.start+'&end='+$scope.newevent.end+'&capacity='+$scope.newevent.capacity+'&companyId='+$scope.user.usersCompanyID).
 		  then(function(response) {
 		  if(response.data.id==0){
 			alert("There was an error creating event, Please try again.");
@@ -741,7 +741,7 @@ angular.module('iot', ['ionic','chart.js'])
 	$scope.newarea = {};
 	
 		// Simple GET request example :
-	$http.get('http://localhost:8080/Overlord/rest/venues').
+	$http.get('http://overlord.elasticbeanstalk.com/rest/venues').
 	  then(function(response) {
 	  	$scope.venues= response.data;
 	    // this callback will be called asynchronously
@@ -767,7 +767,7 @@ angular.module('iot', ['ionic','chart.js'])
 		}
 		
 		// Simple POST request example (passing data) :
-		$http.post('http://localhost:8080/Overlord/rest/areas?areaName='+$scope.newarea.areaName+'&capacity='+$scope.newarea.capacity+'&venueId='+$scope.newarea.venueid).
+		$http.post('http://overlord.elasticbeanstalk.com/rest/areas?areaName='+$scope.newarea.areaName+'&capacity='+$scope.newarea.capacity+'&venueId='+$scope.newarea.venueid).
 		  then(function(response) {
 		  if(response.data.id==0){
 			alert("There was an error creating area, Please try again.");
@@ -797,7 +797,7 @@ angular.module('iot', ['ionic','chart.js'])
 	}
 
 	// Simple GET request example :
-	$http.get('http://localhost:8080/Overlord/rest/areas').
+	$http.get('http://overlord.elasticbeanstalk.com/rest/areas').
 	  then(function(response) {
 	  	$scope.areas= response.data;
 	    // this callback will be called asynchronously
@@ -831,7 +831,7 @@ angular.module('iot', ['ionic','chart.js'])
 		}
 		
 				// Simple POST request example (passing data) :
-		$http.post('http://localhost:8080/Overlord/rest/positions?positionName='+$scope.newposition.positionName+'&positionType='+$scope.newposition.positionType+'&positionFunction='+$scope.newposition.positionFunction+'&areaId='+$scope.newposition.areaid).
+		$http.post('http://overlord.elasticbeanstalk.com/rest/positions?positionName='+$scope.newposition.positionName+'&positionType='+$scope.newposition.positionType+'&positionFunction='+$scope.newposition.positionFunction+'&areaId='+$scope.newposition.areaid).
 		  then(function(response) {
 		  if(response.data.id==0){
 			alert("There was an error creating position, Please try again.");
@@ -865,7 +865,7 @@ angular.module('iot', ['ionic','chart.js'])
 	}
 	
 	// Simple GET request example :
-	$http.get('http://localhost:8080/Overlord/rest/events').
+	$http.get('http://overlord.elasticbeanstalk.com/rest/events').
 	  then(function(response) {
 	  	$scope.events= response.data;
 	    // this callback will be called asynchronously
@@ -893,7 +893,7 @@ angular.module('iot', ['ionic','chart.js'])
 		}
 
 		// Simple POST request example (passing data) :
-		$http.post('http://localhost:8080/Overlord/rest/venues?venueName='+$scope.newvenue.venueName+'&capacity='+$scope.newvenue.capacity+'&eventId='+$scope.newvenue.eventId).
+		$http.post('http://overlord.elasticbeanstalk.com/rest/venues?venueName='+$scope.newvenue.venueName+'&capacity='+$scope.newvenue.capacity+'&eventId='+$scope.newvenue.eventId).
 		  then(function(response) {
 		  if(response.data.id==0){
 			alert("There was an error creating venue, Please try again.");
@@ -1022,7 +1022,7 @@ angular.module('iot', ['ionic','chart.js'])
 		}
 
 		// Simple POST request example (passing data) :
-		$http.post('http://localhost:8080/Overlord/rest/users/'+$scope.newuserposition.userid+'/setposition?positionId='+$scope.position.id).
+		$http.post('http://overlord.elasticbeanstalk.com/rest/users/'+$scope.newuserposition.userid+'/setposition?positionId='+$scope.position.id).
 		  then(function(response) {
 		  if(response.data.id==0){
 			alert("There was an error assigning the position, Please try again.");
