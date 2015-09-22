@@ -15,6 +15,24 @@
 			<h1 class="title">Menu</h1>
 		</ion-header-bar>
 		<ion-content>
+			<div ng-if="leftSide.src === 'Supervisor'" class="list">
+				<a menu-close class="item item-icon-left" href="#/route/events">
+					<i class="icon ion-ios7-pulse"></i>
+					Events
+				</a>
+				<a menu-close class="item item-icon-left" href="#/route/users">
+					<i class="icon ion-ios7-people"></i>
+					User Profiles
+					<!--<span class="badge badge-balanced">{{users.length}}</span>-->
+				</a>
+				<div class="item item-divider">
+					Account
+				</div>
+				<a menu-close class="item item-icon-left" href="#/intro">
+					<i class="icon ion-power"></i>
+					Log out
+				</a>
+			</div>
 			<div ng-if="leftSide.src === 'Admin'" class="list">
 				<a menu-close class="item item-icon-left" href="#/route/events">
 					<i class="icon ion-ios7-pulse"></i>

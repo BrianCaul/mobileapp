@@ -161,7 +161,6 @@ angular.module('iot', ['ionic','chart.js'])
 .controller('MainCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout, $window, $location, SideMenuSwitcher, $http) {
 	$scope.leftSide = SideMenuSwitcher.leftSide;
 	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
-	$scope.areas = JSON.parse(window.localStorage['areas'] || '{}');
 	$scope.eventIDD = window.localStorage['eventID'];
 	$scope.companyId = $scope.user.usersCompanyID;
 	// Simple GET request example :
@@ -282,6 +281,28 @@ angular.module('iot', ['ionic','chart.js'])
 	$scope.closeAlerts = function() {
 		$scope.popover.hide();
 	};
+
+	$scope.updateAreaNumbers = function(updateAreaId, newValue) {
+		// Simple POST request example (passing data) :
+		$http.post('http://overlord.elasticbeanstalk.com/rest/areas/'+updateAreaId+'/updateNumbers?numVisitors='+newValue).
+		  then(function(response) {
+		  if(response.data.id==0){
+			console.log("There was an error updating the area, Please try again.");
+		  }
+		  for(var x=0; x<$scope.areas.length;x++){
+		  	if($scope.areas[x].id == updateAreaId){
+		  		$scope.areas[x].value = newValue;
+		  	}
+		  }
+			// this callback will be called asynchronously
+			// when the response is available
+		  }, function(response) {
+			console.log("There was an error updating the area, Please try again.");
+			// called asynchronously if an error occurs
+			// or server returns response with an error status.
+		  });
+	};
+
 	$scope.$on('$destroy', function() {
 		$scope.popover.remove();
 	});
@@ -397,7 +418,11 @@ angular.module('iot', ['ionic','chart.js'])
 		      		if($scope.user.userType==='Attendant'){
 						SideMenuSwitcher.leftSide.src='Attendant';
 						$state.go('router.attendantview');
-		      		}else{
+		      		}else if($scope.user.userType==='Supervisor'){
+		      			SideMenuSwitcher.leftSide.src='Supervisor';
+						$state.go('router.events');
+		      		}
+		      		else{
 						SideMenuSwitcher.leftSide.src='Admin';
 		      			$state.go('router.events');
 		      		}
@@ -983,7 +1008,7 @@ angular.module('iot', ['ionic','chart.js'])
 		if($scope.attendantposition.numVisitors > 0){
 	
 		$scope.attendantposition.numVisitors = $scope.attendantposition.numVisitors -1;
-				$http.post('http://localhost:8082/Overlord/rest/positions/'+$scope.attendantposition.id+'/exit?numVisitors='+$scope.attendantposition.numVisitors).
+				$http.post('http://overlord.elasticbeanstalk.com/rest/positions/'+$scope.attendantposition.id+'/exit?numVisitors='+$scope.attendantposition.numVisitors).
 		  then(function(response) {
 			if(response.data !='Exit Successful'){
 				$scope.attendantposition.numVisitors = $scope.attendantposition.numVisitors +1;
@@ -992,7 +1017,7 @@ angular.module('iot', ['ionic','chart.js'])
 			// this callback will be called asynchronously
 			// when the response is available
 		  }, function(response) {
-			alert("There was an error entering the position, Please try again.");
+			alert("There was an error existing the position, Please try again.");
 			// called asynchronously if an error occurs
 			// or server returns response with an error status.
 		  });

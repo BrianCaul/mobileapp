@@ -15,6 +15,9 @@
 				<div class="item item-divider">
 				Position Info
 				</div>
+				<li class="item">
+					Position Type : {{position.positionType}}
+				</li>
 				<li class="item item-toggle">
 					Enabled
 					<label class="toggle toggle-balanced">
@@ -27,8 +30,7 @@
 				<div class="item item-divider">
 				Attendants
 				</div>
-				<div ng-repeat="user in position.attendants">
-						<div class="col-lg-100" on-hold="userHold(user)">
+				<div ng-repeat="user in position.attendants" class="item" on-hold="userHold(user)">
 							<div class="card">
 								<div class="item item-avatar">
 									<img ng-src="{{user.avatar}}">
@@ -47,10 +49,9 @@
 									</li>
 								</ul>
 							</div>
-						</div>
 				</div>
 			</div>
-			<form name="addUserToPositionForm" ng-init="setFormScope(this)" data-ng-submit="addUserPositionSubmit()">
+			<form ng-if="leftSide.src === 'Admin'" name="addUserToPositionForm" ng-init="setFormScope(this)" data-ng-submit="addUserPositionSubmit()">
 				<div class="list">
 					<div class="item item-divider">
 					Position Details
@@ -59,7 +60,7 @@
 						<div class="input-label">
 						User 
 						</div>
-						<select ng-model="newuserposition.userid" ng-options="o.id as o.userName for o in users"></select>
+						<select ng-model="newuserposition.userid" ng-options="o.id as o.name for o in users | filter:{userType: 'Attendant'}"></select>
 					</label>
 				</div>
 				<div class="padding">
