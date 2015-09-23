@@ -2,25 +2,15 @@
 	<ion-content>
 		<div class="row chart-wrap">
 			<div class="col">
-				<h4>Line Chart</h4>
+				<h4>Event Entrys Per Hour Since Beginning of Event</h4>
 				<canvas id="line2" class="chart chart-line" options="options" data="linedata" labels="linelabels" legend="true" series="lineseries"></canvas>
+				
 			</div>
 		</div>
-		<div class="row chart-wrap">
-			<div class="col">
-				<h4>Bar Chart</h4>
-				<canvas id="bar" class="chart chart-bar" options="options" data="bardata" labels="barlabels" legend="true" series="barseries"></canvas>
-			</div>
-		</div>
-		<div class="row chart-wrap responsive-lg">
-			<div class="col">
-				<h4>Polar Chart</h4>
-				<canvas id="polar-area" class="chart chart-polar-area" data="polarData" labels="polarLabels"></canvas> 
-			</div>
-			<div class="col">
-				<h4>Doughnut Chart</h4>
-				<canvas id="doughnut" class="chart chart-doughnut" data="doughnutData" labels="doughnutLabels"></canvas>
-			</div>
+		<div class="padding center">
+					<button class="button button-balanced" ng-click="exportExcel()">
+							Export all data
+					</button>
 		</div>
 	</ion-content>
 </ion-view>

@@ -1,4 +1,4 @@
-angular.module('iot', ['ionic','chart.js'])
+angular.module('iot', ['ionic','chart.js','ngCordova'])
 
 .config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
@@ -164,7 +164,7 @@ angular.module('iot', ['ionic','chart.js'])
 	$scope.eventIDD = window.localStorage['eventID'];
 	$scope.companyId = $scope.user.usersCompanyID;
 	// Simple GET request example :
-		$http.get('http://overlord.elasticbeanstalk.com/rest/companies/'+$scope.companyId).
+		$http.get('http://localhost:8082/Overlord/rest/companies/'+$scope.companyId).
 		  then(function(response) {
 			$scope.company= response.data;
 			window.localStorage['company'] = JSON.stringify($scope.company);
@@ -213,54 +213,60 @@ angular.module('iot', ['ionic','chart.js'])
 		$scope.eventIDD = $location.search().eventId;
 	}
 	// Simple GET request example :
+	var timer = undefined;
 	if($scope.eventIDD !=null && $scope.eventIDD !='undefined'){
-	$http.get('http://overlord.elasticbeanstalk.com/rest/events/'+$scope.eventIDD).
-	  then(function(response) {
-	  	$scope.event= response.data;
-		$scope.areas = [];
-		for(var i =0; i< $scope.event.venues.length; i++){
-			$scope.areas.push.apply($scope.areas, $scope.event.venues[i].areas);
-		}
-
-		$scope.mainarea = {
-			value:0,
-			iconBefore:'ion-unlocked',
-			iconAfter : 'ion-locked',
-			capacity : 0
-		}
-
-		for(var i =0; i< $scope.areas.length; i++){
-			$scope.areas[i].value = 0;
-			$scope.areas[i].iconBefore = 'ion-unlocked';
-			$scope.areas[i].iconAfter = 'ion-locked';
-			for(var x =0; x< $scope.areas[i].positions.length; x++){
-				$scope.areas[i].positions[x].icon ='ion-log-in';
-				if($scope.areas[i].positions[x].positionFunction =='In'){
-					$scope.areas[i].positions[x].color ='balanced';
-					$scope.areas[i].positions[x].positionFunction ='Entry Only';
-				}
-				if($scope.areas[i].positions[x].positionFunction =='Out'){
-					$scope.areas[i].positions[x].color ='assertive';
-					$scope.areas[i].positions[x].positionFunction ='Exit Only';
-				}
-				if($scope.areas[i].positions[x].positionFunction =='Both'){
-					$scope.areas[i].positions[x].positionFunction ='Entry/Exit';
+	
+	  var poll = function() {
+			$http.get('http://localhost:8082/Overlord/rest/events/'+$scope.eventIDD).
+			  then(function(response) {
+				$scope.event= response.data;
+				$scope.areas = [];
+				for(var i =0; i< $scope.event.venues.length; i++){
+					$scope.areas.push.apply($scope.areas, $scope.event.venues[i].areas);
 				}
 
-				$scope.areas[i].value = $scope.areas[i].value + $scope.areas[i].positions[x].numVisitors;
-			}
+				$scope.mainarea = {
+					value:0,
+					iconBefore:'ion-unlocked',
+					iconAfter : 'ion-locked',
+					capacity : 0
+				}
 
-			$scope.mainarea.value = $scope.mainarea.value + $scope.areas[i].value;
-			$scope.mainarea.capacity = $scope.mainarea.capacity + $scope.areas[i].capacity;
+				for(var i =0; i< $scope.areas.length; i++){
+					$scope.areas[i].value = 0;
+					$scope.areas[i].iconBefore = 'ion-unlocked';
+					$scope.areas[i].iconAfter = 'ion-locked';
+					for(var x =0; x< $scope.areas[i].positions.length; x++){
+						$scope.areas[i].positions[x].icon ='ion-log-in';
+						if($scope.areas[i].positions[x].positionFunction =='In'){
+							$scope.areas[i].positions[x].color ='balanced';
+							$scope.areas[i].positions[x].positionFunction ='Entry Only';
+						}
+						if($scope.areas[i].positions[x].positionFunction =='Out'){
+							$scope.areas[i].positions[x].color ='assertive';
+							$scope.areas[i].positions[x].positionFunction ='Exit Only';
+						}
+						if($scope.areas[i].positions[x].positionFunction =='Both'){
+							$scope.areas[i].positions[x].positionFunction ='Entry/Exit';
+						}
 
-		}
-	    // this callback will be called asynchronously
-	    // when the response is available
-	  }, function(response) {
-	  	alert("Error retrieving event");
-	    // called asynchronously if an error occurs
-	    // or server returns response with an error status.
-	  });
+						$scope.areas[i].value = $scope.areas[i].value + $scope.areas[i].positions[x].numVisitors;
+					}
+
+					$scope.mainarea.value = $scope.mainarea.value + $scope.areas[i].value;
+					$scope.mainarea.capacity = $scope.mainarea.capacity + $scope.areas[i].capacity;
+					timer = $timeout(poll, 5000);
+				}
+				// this callback will be called asynchronously
+				// when the response is available
+			  }, function(response) {
+				timer = $timeout(poll, 5000);
+				alert("Error retrieving event");
+				// called asynchronously if an error occurs
+				// or server returns response with an error status.
+			  });
+	  }
+	  poll();
 	}
 	
 	$scope.toggleLeft = function() {
@@ -284,7 +290,7 @@ angular.module('iot', ['ionic','chart.js'])
 
 	$scope.updateAreaNumbers = function(updateAreaId, newValue) {
 		// Simple POST request example (passing data) :
-		$http.post('http://overlord.elasticbeanstalk.com/rest/areas/'+updateAreaId+'/updateNumbers?numVisitors='+newValue).
+		$http.post('http://localhost:8082/Overlord/rest/areas/'+updateAreaId+'/updateNumbers?numVisitors='+newValue).
 		  then(function(response) {
 		  if(response.data.id==0){
 			console.log("There was an error updating the area, Please try again.");
@@ -305,6 +311,9 @@ angular.module('iot', ['ionic','chart.js'])
 
 	$scope.$on('$destroy', function() {
 		$scope.popover.remove();
+		if (timer) {
+            $timeout.cancel(timer);
+        }
 	});
 	$timeout(function () {
 		ionic.EventController.trigger("resize", "", true, false);
@@ -345,7 +354,7 @@ angular.module('iot', ['ionic','chart.js'])
 		{ id: '5', positionName: 'New Position 3', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false },
 	];
 		// Simple GET request example :
-	$http.get('http://overlord.elasticbeanstalk.com/rest/events').
+	$http.get('http://localhost:8082/Overlord/rest/events').
 	  then(function(response) {
 	  	$scope.events= response.data;
 		
@@ -396,7 +405,7 @@ angular.module('iot', ['ionic','chart.js'])
 		$ionicLoading.show({
 		  template: 'Logging in...'
 		});
-		$http.post('http://overlord.elasticbeanstalk.com/rest/users/signin?uname='+ $scope.cred.username +'&pass='+$scope.cred.password).
+		$http.post('http://localhost:8082/Overlord/rest/users/signin?uname='+ $scope.cred.username +'&pass='+$scope.cred.password).
 		    success(function(data, status, headers, config) {
 		      $scope.user = data;
 		      if($scope.user ==='' || $scope.user ==undefined || $scope.user.id===0){
@@ -502,32 +511,103 @@ angular.module('iot', ['ionic','chart.js'])
       }
     }
 	function getRandomValue (data) {
-		var l = data.length, previous = l ? data[l - 1] : 50;
-		var y = previous + Math.random() * 10 - 5;
-		return y < 0 ? 0 : y > 100 ? 100 : y;
+		return $scope.mainarea.value;
 	}
 	// Simulate async data update
 	$interval(function () {
 		getLiveChartData();
 	}, 500);
 })
-.controller('Charts', function($scope, $interval) {
-	$scope.linelabels = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-	$scope.lineseries = ['Series A', 'Series B'];
-	$scope.linedata = [
-		[65, 76, 50, 47, 36, 30, 25, 48, 56, 55, 59, 63],
-		[50, 48, 40, 57, 86, 99, 90, 58, 48, 80, 57, 60]
-	];
-	$scope.barlabels = ['2008', '2009', '2010', '2011', '2012', '2013', '2014'];
-	$scope.barseries = ['Series A', 'Series B'];
-	$scope.bardata = [
-		[65, 59, 80, 81, 56, 55, 40],
-		[28, 48, 40, 19, 86, 27, 90]
-	];
-	$scope.polarLabels = ["Water", "Energy", "Gas", "Internet", "Fees"];
-	$scope.polarData = [300, 500, 100, 40, 120];
-	$scope.doughnutLabels = ["Water", "Energy", "Gas", "Fees"];
-	$scope.doughnutData = [300, 500, 100, 20];
+.controller('Charts', function($scope, $interval, $http) {
+
+		$scope.linedata = [
+				[0]
+			];
+		$scope.linelabels = ["0"];
+			// Simple GET request example :
+		$http.get('http://localhost:8082/Overlord/rest/stats/'+$scope.eventIDD).
+		  then(function(response) {
+			$scope.allStats= response.data;
+			$scope.linedata = [
+				$scope.allStats.entries
+			];
+			$scope.linelabels = $scope.allStats.hours;
+
+			// this callback will be called asynchronously
+			// when the response is available
+		  }, function(response) {
+			alert("Error retrieving company");
+			// called asynchronously if an error occurs
+			// or server returns response with an error status.
+		  });
+
+		
+		
+		function ConvertToCSV(objArray) {
+			//If JSONData is not an object then JSON.parse will parse the JSON string in an Object
+			var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+            var str = '';
+
+            for (var i = 0; i < array.length; i++) {
+                var line = '';
+                for (var index in array[i]) {
+                    if (line != '') line += ','
+
+                    line += array[i][index];
+                }
+
+                str += line + '\r\n';
+            }
+
+			//Generate a file name
+			var fileName = "EventReport";
+			//this will remove the blank-spaces from the title and replace it with an underscore
+			 if (!str.match(/^data:text\/csv/i)) {
+            str = 'data:text/csv;charset=utf-8,' + str;
+			}
+			//Initialize file format you want csv or xls
+			data = encodeURI(str);
+			// Now the little tricky part.
+			// you can use either>> window.open(uri);
+			// but this will not work in some browsers
+			// or you will not get the correct file extension    
+
+			//this trick will generate a temp <a /> tag
+			var link = document.createElement("a");
+			link.setAttribute('href',data);
+			link.setAttribute('download',fileName  + ".csv");
+
+			//set the visibility hidden so it will not effect on your web-layout
+			//link.style = "visibility:hidden";
+
+
+			//this part will append the anchor tag and remove it after automatic click
+			link.click();
+		};
+
+		
+				//Export Excel 
+		$scope.exportExcel = function() {
+		
+		
+							// Simple GET request example :
+			$http.get('http://localhost:8082/Overlord/rest/allstats/'+$scope.eventIDD).
+			  then(function(response) {
+				var jsonObject = JSON.stringify(response.data);
+				ConvertToCSV(jsonObject)
+
+				// this callback will be called asynchronously
+				// when the response is available
+			  }, function(response) {
+				alert("Error retrieving company");
+				// called asynchronously if an error occurs
+				// or server returns response with an error status.
+			  });
+		
+		};
+
+		$scope.lineseries = ['Entries'];
+	
 	$scope.options =  {
 		responsive: true,
 		showTooltips: true,
@@ -538,17 +618,6 @@ angular.module('iot', ['ionic','chart.js'])
 		maintainAspectRatio: false,
 		datasetStrokeWidth : 1,
     };
-	$interval(function () {
-		$scope.doughnutData = [];
-		$scope.polarData = [];
-		
-		for (var i = 0; i < 5; i++) {
-			$scope.polarData.push(Math.floor(Math.random() * 500));
-		}
-		for (var i = 0; i < 4; i++) {
-			$scope.doughnutData.push(Math.floor(Math.random() * 500));
-		}
-	}, 2500);
 })
 .controller('Actions', function($scope, $ionicActionSheet, $ionicModal) {
 	$ionicModal.fromTemplateUrl('templates/edit-action.html', {
@@ -584,7 +653,7 @@ angular.module('iot', ['ionic','chart.js'])
 .controller('Users', function($scope, $ionicActionSheet, $http) {
 
 		// Simple GET request example :
-		$http.get('http://overlord.elasticbeanstalk.com/rest/companies/'+$scope.companyId).
+		$http.get('http://localhost:8082/Overlord/rest/companies/'+$scope.companyId).
 		  then(function(response) {
 			$scope.company= response.data;
 			window.localStorage['company'] = JSON.stringify($scope.company);
@@ -675,7 +744,7 @@ angular.module('iot', ['ionic','chart.js'])
 		$scope.newuser.lastLogin = 'Last login: never';
 		
 		// Simple POST request example (passing data) :
-		$http.post('http://overlord.elasticbeanstalk.com/rest/users?email='+$scope.newuser.email+'&userType='+$scope.newuser.userType+'&username='+$scope.newuser.username+'&password='+$scope.newuser.password+'&phone='+$scope.newuser.phone+'&name='+$scope.newuser.name+'&companyId='+$scope.user.usersCompanyID).
+		$http.post('http://localhost:8082/Overlord/rest/users?email='+$scope.newuser.email+'&userType='+$scope.newuser.userType+'&username='+$scope.newuser.username+'&password='+$scope.newuser.password+'&phone='+$scope.newuser.phone+'&name='+$scope.newuser.name+'&companyId='+$scope.user.usersCompanyID).
 		  then(function(response) {
 		 	if(response.data ==='Error creating user'){
 		 		alert("There was an error creating user, Please try again.");
@@ -730,7 +799,7 @@ angular.module('iot', ['ionic','chart.js'])
 		}
 
 		// Simple POST request example (passing data) :
-		$http.post('http://overlord.elasticbeanstalk.com/rest/events?eventName='+$scope.newevent.eventName+'&description='+$scope.newevent.description +'&start='+$scope.newevent.start+'&end='+$scope.newevent.end+'&capacity='+$scope.newevent.capacity+'&companyId='+$scope.user.usersCompanyID).
+		$http.post('http://localhost:8082/Overlord/rest/events?eventName='+$scope.newevent.eventName+'&description='+$scope.newevent.description +'&start='+$scope.newevent.start+'&end='+$scope.newevent.end+'&capacity='+$scope.newevent.capacity+'&companyId='+$scope.user.usersCompanyID).
 		  then(function(response) {
 		  if(response.data.id==0){
 			alert("There was an error creating event, Please try again.");
@@ -766,7 +835,7 @@ angular.module('iot', ['ionic','chart.js'])
 	$scope.newarea = {};
 	
 		// Simple GET request example :
-	$http.get('http://overlord.elasticbeanstalk.com/rest/venues').
+	$http.get('http://localhost:8082/Overlord/rest/venues').
 	  then(function(response) {
 	  	$scope.venues= response.data;
 	    // this callback will be called asynchronously
@@ -792,7 +861,7 @@ angular.module('iot', ['ionic','chart.js'])
 		}
 		
 		// Simple POST request example (passing data) :
-		$http.post('http://overlord.elasticbeanstalk.com/rest/areas?areaName='+$scope.newarea.areaName+'&capacity='+$scope.newarea.capacity+'&venueId='+$scope.newarea.venueid).
+		$http.post('http://localhost:8082/Overlord/rest/areas?areaName='+$scope.newarea.areaName+'&capacity='+$scope.newarea.capacity+'&venueId='+$scope.newarea.venueid).
 		  then(function(response) {
 		  if(response.data.id==0){
 			alert("There was an error creating area, Please try again.");
@@ -822,7 +891,7 @@ angular.module('iot', ['ionic','chart.js'])
 	}
 
 	// Simple GET request example :
-	$http.get('http://overlord.elasticbeanstalk.com/rest/areas').
+	$http.get('http://localhost:8082/Overlord/rest/areas').
 	  then(function(response) {
 	  	$scope.areas= response.data;
 	    // this callback will be called asynchronously
@@ -856,7 +925,7 @@ angular.module('iot', ['ionic','chart.js'])
 		}
 		
 				// Simple POST request example (passing data) :
-		$http.post('http://overlord.elasticbeanstalk.com/rest/positions?positionName='+$scope.newposition.positionName+'&positionType='+$scope.newposition.positionType+'&positionFunction='+$scope.newposition.positionFunction+'&areaId='+$scope.newposition.areaid).
+		$http.post('http://localhost:8082/Overlord/rest/positions?positionName='+$scope.newposition.positionName+'&positionType='+$scope.newposition.positionType+'&positionFunction='+$scope.newposition.positionFunction+'&areaId='+$scope.newposition.areaid).
 		  then(function(response) {
 		  if(response.data.id==0){
 			alert("There was an error creating position, Please try again.");
@@ -890,7 +959,7 @@ angular.module('iot', ['ionic','chart.js'])
 	}
 	
 	// Simple GET request example :
-	$http.get('http://overlord.elasticbeanstalk.com/rest/events').
+	$http.get('http://localhost:8082/Overlord/rest/events').
 	  then(function(response) {
 	  	$scope.events= response.data;
 	    // this callback will be called asynchronously
@@ -918,7 +987,7 @@ angular.module('iot', ['ionic','chart.js'])
 		}
 
 		// Simple POST request example (passing data) :
-		$http.post('http://overlord.elasticbeanstalk.com/rest/venues?venueName='+$scope.newvenue.venueName+'&capacity='+$scope.newvenue.capacity+'&eventId='+$scope.newvenue.eventId).
+		$http.post('http://localhost:8082/Overlord/rest/venues?venueName='+$scope.newvenue.venueName+'&capacity='+$scope.newvenue.capacity+'&eventId='+$scope.newvenue.eventId).
 		  then(function(response) {
 		  if(response.data.id==0){
 			alert("There was an error creating venue, Please try again.");
@@ -942,7 +1011,7 @@ angular.module('iot', ['ionic','chart.js'])
 		$scope.newvenue = defaultForm;
 	};
 })
-.controller('AttendantController', function($scope, $state, $location, SideMenuSwitcher, $http) {
+.controller('AttendantController', function($scope, $state, $location, SideMenuSwitcher, $http, $cordovaVibration) {
 	$scope.leftSide = SideMenuSwitcher.leftSide;
 	
 	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
@@ -953,7 +1022,7 @@ angular.module('iot', ['ionic','chart.js'])
 	}
 	
 	//TODO: Call this or simplified version in order to get position count before each clicker event. Allow for multiple doormen.
-	$http.get('http://overlord.elasticbeanstalk.com/rest/positions/'+$scope.positionId).
+	$http.get('http://localhost:8082/Overlord/rest/positions/'+$scope.positionId).
 		  then(function(response) {
 			$scope.attendantposition= response.data;
 			$scope.attendantposition.icon ='ion-log-in';
@@ -978,10 +1047,11 @@ angular.module('iot', ['ionic','chart.js'])
 		  });
 	
 	$scope.entrySubmit = function() {
+	//$cordovaVibration.vibrate(100);
 	if($scope.attendantposition.positionFunction != 'Exit Only'){
 		$scope.attendantposition.numVisitors = $scope.attendantposition.numVisitors +1;
 		
-		$http.post('http://overlord.elasticbeanstalk.com/rest/positions/'+$scope.attendantposition.id+'/enter?numVisitors='+$scope.attendantposition.numVisitors).
+		$http.post('http://localhost:8082/Overlord/rest/positions/'+$scope.attendantposition.id+'/enter?numVisitors='+$scope.attendantposition.numVisitors).
 		  then(function(response) {
 			if(response.data !='Entry Successful'){
 				if($scope.attendantposition.numVisitors >0){
@@ -1003,12 +1073,13 @@ angular.module('iot', ['ionic','chart.js'])
 	};
 
 	$scope.exitSubmit = function() {
+	//$cordovaVibration.vibrate(100);
 	if($scope.attendantposition.positionFunction != 'Entry Only'){
 	
 		if($scope.attendantposition.numVisitors > 0){
 	
 		$scope.attendantposition.numVisitors = $scope.attendantposition.numVisitors -1;
-				$http.post('http://overlord.elasticbeanstalk.com/rest/positions/'+$scope.attendantposition.id+'/exit?numVisitors='+$scope.attendantposition.numVisitors).
+				$http.post('http://localhost:8082/Overlord/rest/positions/'+$scope.attendantposition.id+'/exit?numVisitors='+$scope.attendantposition.numVisitors).
 		  then(function(response) {
 			if(response.data !='Exit Successful'){
 				$scope.attendantposition.numVisitors = $scope.attendantposition.numVisitors +1;
@@ -1047,7 +1118,7 @@ angular.module('iot', ['ionic','chart.js'])
 		}
 
 		// Simple POST request example (passing data) :
-		$http.post('http://overlord.elasticbeanstalk.com/rest/users/'+$scope.newuserposition.userid+'/setposition?positionId='+$scope.position.id).
+		$http.post('http://localhost:8082/Overlord/rest/users/'+$scope.newuserposition.userid+'/setposition?positionId='+$scope.position.id).
 		  then(function(response) {
 		  if(response.data.id==0){
 			alert("There was an error assigning the position, Please try again.");
