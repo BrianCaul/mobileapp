@@ -164,7 +164,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	$scope.eventIDD = window.localStorage['eventID'];
 	$scope.companyId = $scope.user.usersCompanyID;
 	// Simple GET request example :
-		$http.get('http://localhost:8082/Overlord/rest/companies/'+$scope.companyId).
+		$http.get('http://localhost:8080/Overlord/rest/companies/'+$scope.companyId).
 		  then(function(response) {
 			$scope.company= response.data;
 			window.localStorage['company'] = JSON.stringify($scope.company);
@@ -217,7 +217,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	if($scope.eventIDD !=null && $scope.eventIDD !='undefined'){
 	
 	  var poll = function() {
-			$http.get('http://localhost:8082/Overlord/rest/events/'+$scope.eventIDD).
+			$http.get('http://localhost:8080/Overlord/rest/events/'+$scope.eventIDD).
 			  then(function(response) {
 				$scope.event= response.data;
 				$scope.areas = [];
@@ -290,7 +290,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 
 	$scope.updateAreaNumbers = function(updateAreaId, newValue) {
 		// Simple POST request example (passing data) :
-		$http.post('http://localhost:8082/Overlord/rest/areas/'+updateAreaId+'/updateNumbers?numVisitors='+newValue).
+		$http.post('http://localhost:8080/Overlord/rest/areas/'+updateAreaId+'/updateNumbers?numVisitors='+newValue).
 		  then(function(response) {
 		  if(response.data.id==0){
 			console.log("There was an error updating the area, Please try again.");
@@ -354,7 +354,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 		{ id: '5', positionName: 'New Position 3', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false },
 	];
 		// Simple GET request example :
-	$http.get('http://localhost:8082/Overlord/rest/events').
+	$http.get('http://localhost:8080/Overlord/rest/events?companyId='+$scope.user.usersCompanyID).
 	  then(function(response) {
 	  	$scope.events= response.data;
 		
@@ -405,7 +405,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 		$ionicLoading.show({
 		  template: 'Logging in...'
 		});
-		$http.post('http://localhost:8082/Overlord/rest/users/signin?uname='+ $scope.cred.username +'&pass='+$scope.cred.password).
+		$http.post('http://localhost:8080/Overlord/rest/users/signin?uname='+ $scope.cred.username +'&pass='+$scope.cred.password).
 		    success(function(data, status, headers, config) {
 		      $scope.user = data;
 		      if($scope.user ==='' || $scope.user ==undefined || $scope.user.id===0){
@@ -525,7 +525,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 			];
 		$scope.linelabels = ["0"];
 			// Simple GET request example :
-		$http.get('http://localhost:8082/Overlord/rest/stats/'+$scope.eventIDD).
+		$http.get('http://localhost:8080/Overlord/rest/stats/'+$scope.eventIDD).
 		  then(function(response) {
 			$scope.allStats= response.data;
 			$scope.linedata = [
@@ -591,7 +591,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 		
 		
 							// Simple GET request example :
-			$http.get('http://localhost:8082/Overlord/rest/allstats/'+$scope.eventIDD).
+			$http.get('http://localhost:8080/Overlord/rest/allstats/'+$scope.eventIDD).
 			  then(function(response) {
 				var jsonObject = JSON.stringify(response.data);
 				ConvertToCSV(jsonObject)
@@ -653,7 +653,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 .controller('Users', function($scope, $ionicActionSheet, $http) {
 
 		// Simple GET request example :
-		$http.get('http://localhost:8082/Overlord/rest/companies/'+$scope.companyId).
+		$http.get('http://localhost:8080/Overlord/rest/companies/'+$scope.companyId).
 		  then(function(response) {
 			$scope.company= response.data;
 			window.localStorage['company'] = JSON.stringify($scope.company);
@@ -744,7 +744,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 		$scope.newuser.lastLogin = 'Last login: never';
 		
 		// Simple POST request example (passing data) :
-		$http.post('http://localhost:8082/Overlord/rest/users?email='+$scope.newuser.email+'&userType='+$scope.newuser.userType+'&username='+$scope.newuser.username+'&password='+$scope.newuser.password+'&phone='+$scope.newuser.phone+'&name='+$scope.newuser.name+'&companyId='+$scope.user.usersCompanyID).
+		$http.post('http://localhost:8080/Overlord/rest/users?email='+$scope.newuser.email+'&userType='+$scope.newuser.userType+'&username='+$scope.newuser.username+'&password='+$scope.newuser.password+'&phone='+$scope.newuser.phone+'&name='+$scope.newuser.name+'&companyId='+$scope.user.usersCompanyID).
 		  then(function(response) {
 		 	if(response.data ==='Error creating user'){
 		 		alert("There was an error creating user, Please try again.");
@@ -799,7 +799,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 		}
 
 		// Simple POST request example (passing data) :
-		$http.post('http://localhost:8082/Overlord/rest/events?eventName='+$scope.newevent.eventName+'&description='+$scope.newevent.description +'&start='+$scope.newevent.start+'&end='+$scope.newevent.end+'&capacity='+$scope.newevent.capacity+'&companyId='+$scope.user.usersCompanyID).
+		$http.post('http://localhost:8080/Overlord/rest/events?eventName='+$scope.newevent.eventName+'&description='+$scope.newevent.description +'&start='+$scope.newevent.start+'&end='+$scope.newevent.end+'&capacity='+$scope.newevent.capacity+'&companyId='+$scope.user.usersCompanyID).
 		  then(function(response) {
 		  if(response.data.id==0){
 			alert("There was an error creating event, Please try again.");
@@ -835,7 +835,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	$scope.newarea = {};
 	
 		// Simple GET request example :
-	$http.get('http://localhost:8082/Overlord/rest/venues').
+	$http.get('http://localhost:8080/Overlord/rest/venues').
 	  then(function(response) {
 	  	$scope.venues= response.data;
 	    // this callback will be called asynchronously
@@ -861,7 +861,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 		}
 		
 		// Simple POST request example (passing data) :
-		$http.post('http://localhost:8082/Overlord/rest/areas?areaName='+$scope.newarea.areaName+'&capacity='+$scope.newarea.capacity+'&venueId='+$scope.newarea.venueid).
+		$http.post('http://localhost:8080/Overlord/rest/areas?areaName='+$scope.newarea.areaName+'&capacity='+$scope.newarea.capacity+'&venueId='+$scope.newarea.venueid).
 		  then(function(response) {
 		  if(response.data.id==0){
 			alert("There was an error creating area, Please try again.");
@@ -891,7 +891,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	}
 
 	// Simple GET request example :
-	$http.get('http://localhost:8082/Overlord/rest/areas').
+	$http.get('http://localhost:8080/Overlord/rest/areas').
 	  then(function(response) {
 	  	$scope.areas= response.data;
 	    // this callback will be called asynchronously
@@ -925,7 +925,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 		}
 		
 				// Simple POST request example (passing data) :
-		$http.post('http://localhost:8082/Overlord/rest/positions?positionName='+$scope.newposition.positionName+'&positionType='+$scope.newposition.positionType+'&positionFunction='+$scope.newposition.positionFunction+'&areaId='+$scope.newposition.areaid).
+		$http.post('http://localhost:8080/Overlord/rest/positions?positionName='+$scope.newposition.positionName+'&positionType='+$scope.newposition.positionType+'&positionFunction='+$scope.newposition.positionFunction+'&areaId='+$scope.newposition.areaid).
 		  then(function(response) {
 		  if(response.data.id==0){
 			alert("There was an error creating position, Please try again.");
@@ -959,7 +959,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	}
 	
 	// Simple GET request example :
-	$http.get('http://localhost:8082/Overlord/rest/events').
+	$http.get('http://localhost:8080/Overlord/rest/events').
 	  then(function(response) {
 	  	$scope.events= response.data;
 	    // this callback will be called asynchronously
@@ -987,7 +987,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 		}
 
 		// Simple POST request example (passing data) :
-		$http.post('http://localhost:8082/Overlord/rest/venues?venueName='+$scope.newvenue.venueName+'&capacity='+$scope.newvenue.capacity+'&eventId='+$scope.newvenue.eventId).
+		$http.post('http://localhost:8080/Overlord/rest/venues?venueName='+$scope.newvenue.venueName+'&capacity='+$scope.newvenue.capacity+'&eventId='+$scope.newvenue.eventId).
 		  then(function(response) {
 		  if(response.data.id==0){
 			alert("There was an error creating venue, Please try again.");
@@ -1022,7 +1022,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	}
 	
 	//TODO: Call this or simplified version in order to get position count before each clicker event. Allow for multiple doormen.
-	$http.get('http://localhost:8082/Overlord/rest/positions/'+$scope.positionId).
+	$http.get('http://localhost:8080/Overlord/rest/positions/'+$scope.positionId).
 		  then(function(response) {
 			$scope.attendantposition= response.data;
 			$scope.attendantposition.icon ='ion-log-in';
@@ -1051,7 +1051,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	if($scope.attendantposition.positionFunction != 'Exit Only'){
 		$scope.attendantposition.numVisitors = $scope.attendantposition.numVisitors +1;
 		
-		$http.post('http://localhost:8082/Overlord/rest/positions/'+$scope.attendantposition.id+'/enter?numVisitors='+$scope.attendantposition.numVisitors).
+		$http.post('http://localhost:8080/Overlord/rest/positions/'+$scope.attendantposition.id+'/enter?numVisitors='+$scope.attendantposition.numVisitors).
 		  then(function(response) {
 			if(response.data !='Entry Successful'){
 				if($scope.attendantposition.numVisitors >0){
@@ -1079,7 +1079,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 		if($scope.attendantposition.numVisitors > 0){
 	
 		$scope.attendantposition.numVisitors = $scope.attendantposition.numVisitors -1;
-				$http.post('http://localhost:8082/Overlord/rest/positions/'+$scope.attendantposition.id+'/exit?numVisitors='+$scope.attendantposition.numVisitors).
+				$http.post('http://localhost:8080/Overlord/rest/positions/'+$scope.attendantposition.id+'/exit?numVisitors='+$scope.attendantposition.numVisitors).
 		  then(function(response) {
 			if(response.data !='Exit Successful'){
 				$scope.attendantposition.numVisitors = $scope.attendantposition.numVisitors +1;
@@ -1118,7 +1118,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 		}
 
 		// Simple POST request example (passing data) :
-		$http.post('http://localhost:8082/Overlord/rest/users/'+$scope.newuserposition.userid+'/setposition?positionId='+$scope.position.id).
+		$http.post('http://localhost:8080/Overlord/rest/users/'+$scope.newuserposition.userid+'/setposition?positionId='+$scope.position.id).
 		  then(function(response) {
 		  if(response.data.id==0){
 			alert("There was an error assigning the position, Please try again.");
