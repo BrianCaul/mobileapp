@@ -1,4 +1,4 @@
-var urlPrefix ='http://localhost:8082/Overlord';
+var urlPrefix ='http://localhost:8080/Overlord';
 
 angular.module('iot', ['ionic','chart.js','ngCordova'])
 
@@ -163,8 +163,6 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 .controller('MainCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout, $window, $location, SideMenuSwitcher, $http) {
 	$scope.leftSide = SideMenuSwitcher.leftSide;
 	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
-	$scope.eventIDD = window.localStorage['eventID'];
-	
 	
 	$scope.userTypes = [
 		{ name: 'Event Manager', id: 'Event Manager' },
@@ -216,58 +214,61 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 		$scope.popover.hide();
 	};
 
-	$scope.updateAreaNumbers = function(updateAreaId, newValue) {
-		// Simple POST request example (passing data) :
-		$http.post(urlPrefix + '/rest/areas/'+updateAreaId+'/updateNumbers?numVisitors='+newValue).
-		  then(function(response) {
-		  if(response.data.id==0){
-			console.log("There was an error updating the area, Please try again.");
-		  }
-		  for(var x=0; x<$scope.areas.length;x++){
-		  	if($scope.areas[x].id == updateAreaId){
-		  		$scope.areas[x].value = newValue;
-		  	}
-		  }
-			// this callback will be called asynchronously
-			// when the response is available
-		  }, function(response) {
-			console.log("There was an error updating the area, Please try again.");
-			// called asynchronously if an error occurs
-			// or server returns response with an error status.
-		  });
-	};
-
-	$scope.$on('$destroy', function() {
-		$scope.popover.remove();
-		if (timer) {
-            $timeout.cancel(timer);
-        }
-	});
-	$timeout(function () {
-		ionic.EventController.trigger("resize", "", true, false);
-	}, 1500);
+	
 })
 .controller('EventCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout, $window, $location, SideMenuSwitcher, $http) {
 
 	$scope.leftSide = SideMenuSwitcher.leftSide;
-	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
 	
+	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
 	$scope.companyId = $scope.user.usersCompanyID;
-	// Simple GET request example :
-		$http.get(urlPrefix + '/rest/companies/'+$scope.companyId).
-		  then(function(response) {
-			$scope.company= response.data;
-			window.localStorage['company'] = JSON.stringify($scope.company);
-			$scope.users = $scope.company.users;
 
-			// this callback will be called asynchronously
-			// when the response is available
-		  }, function(response) {
-			alert("Error retrieving company");
-			// called asynchronously if an error occurs
-			// or server returns response with an error status.
-		  });
-		  
+		
+		// Simple GET request example :
+	$http.get(urlPrefix + '/rest/events?companyId='+$scope.user.usersCompanyID).
+	  then(function(response) {
+	  	$scope.events= response.data;
+		
+		for (var i =0; i < $scope.events.length; i++) {
+			$scope.events[i].icon  = "ion-log-in";
+			$scope.events[i].resetEnabled  = false;
+		}
+		
+	    // this callback will be called asynchronously
+	    // when the response is available
+	  }, function(response) {
+	  	alert("Error retrieving events");
+	    // called asynchronously if an error occurs
+	    // or server returns response with an error status.
+	  });
+	
+	$scope.toggleLeft = function() {
+		$ionicSideMenuDelegate.toggleLeft();
+	};
+	
+	$ionicPopover.fromTemplateUrl('templates/alerts.html', {
+		scope: $scope,
+	}).then(function(popover) {
+		$scope.popover = popover;
+	});
+	$scope.openAlerts = function($event) {
+		$scope.popover.show($event);
+	};
+	$scope.closeAlerts = function() {
+		$scope.popover.hide();
+	};
+	$scope.$on('$destroy', function() {
+		$scope.popover.remove();
+	});
+
+})
+.controller('SingleEventCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout, $window, $location, SideMenuSwitcher, $http) {
+
+	$scope.leftSide = SideMenuSwitcher.leftSide;
+	
+	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
+	$scope.companyId = $scope.user.usersCompanyID;
+	
 		  
 		  if($location.search().eventId){
 		window.localStorage['eventID'] =$location.search().eventId;
@@ -330,52 +331,34 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	  poll();
 	}
 	
-	$scope.userTypes = [
-		{ name: 'Event Manager', id: 'Event Manager' },
-		{ name: 'Supervisor', id: 'Supervisor' },
-		{ name: 'Attendant', id: 'Attendant' },
-	];
+		// Simple GET request example :++
+	  $scope.updateAreaNumbers = function(updateAreaId, newValue) {
+		// Simple POST request example (passing data) :
+		$http.post(urlPrefix + '/rest/areas/'+updateAreaId+'/updateNumbers?numVisitors='+newValue).
+		  then(function(response) {
+		  if(response.data.id==0){
+			console.log("There was an error updating the area, Please try again.");
+		  }
+		  for(var x=0; x<$scope.areas.length;x++){
+		  	if($scope.areas[x].id == updateAreaId){
+		  		$scope.areas[x].value = newValue;
+		  	}
+		  }
+			// this callback will be called asynchronously
+			// when the response is available
+		  }, function(response) {
+			console.log("There was an error updating the area, Please try again.");
+			// called asynchronously if an error occurs
+			// or server returns response with an error status.
+		  });
+	};
 
-	$scope.positionTypes = [
-		{ name: 'External', id: 'External' },
-		{ name: 'Internal', id: 'Internal' }
-	];
-
-	$scope.positionFunctions = [
-		{ name: 'Entry/Exit', id: 'Entry/Exit' },
-		{ name: 'Entry Only', id: 'Entry' },
-		{ name: 'Exit Only', id: 'Exit' },
-	];
-		
-	$scope.venue = { id: null, venueName: 'New Venue', capacity: 'Exit', eventId: '' },
-	$scope.venues = [
-		{ id: '1', venueName: 'New Venue 1', capacity: '100', eventId: '' },
-		{ id: '2',  venueName: 'New Venue 2', capacity: '50', eventId: ''  },
-		{ id: '3',  venueName: 'New Venue 3', capacity: '20', eventId: '' },
-	];
-
-	$scope.positions = [
-		{ id: '3', positionName: 'New Position 1', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false },
-		{ id: '4', positionName: 'New Position 2', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false  },
-		{ id: '5', positionName: 'New Position 3', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false },
-	];
-		// Simple GET request example :
-	$http.get(urlPrefix + '/rest/events?companyId='+$scope.user.usersCompanyID).
-	  then(function(response) {
-	  	$scope.events= response.data;
-		
-		for (var i =0; i < $scope.events.length; i++) {
-			$scope.events[i].icon  = "ion-log-in";
-			$scope.events[i].resetEnabled  = false;
-		}
-		
-	    // this callback will be called asynchronously
-	    // when the response is available
-	  }, function(response) {
-	  	alert("Error retrieving events");
-	    // called asynchronously if an error occurs
-	    // or server returns response with an error status.
-	  });
+	$scope.$on('$destroy', function() {
+		$scope.popover.remove();
+		if (timer) {
+            $timeout.cancel(timer);
+        }
+	});
 	
 	$scope.toggleLeft = function() {
 		$ionicSideMenuDelegate.toggleLeft();
@@ -657,12 +640,12 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	}
 })
 .controller('Users', function($scope, $ionicActionSheet, $http) {
-
+		$scope.user = JSON.parse(window.localStorage['user'] || '{}');
+		$scope.companyId = $scope.user.usersCompanyID;
 		// Simple GET request example :
 		$http.get(urlPrefix + '/rest/companies/'+$scope.companyId).
 		  then(function(response) {
 			$scope.company= response.data;
-			window.localStorage['company'] = JSON.stringify($scope.company);
 			$scope.users = $scope.company.users;
 
 			// this callback will be called asynchronously
@@ -718,6 +701,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	}
 })
 .controller('addUser', function($scope, $http) {
+	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
 	$scope.setFormScope = function(scope){
 		this.formScope = scope;
 	}
@@ -781,6 +765,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	};
 })
 .controller('addEvent', function($scope, $http) {
+	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
 	$scope.setFormScope = function(scope){
 		this.formScope = scope;
 	}
@@ -835,6 +820,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	};
 })
 .controller('addArea', function($scope, $http) {
+	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
 	$scope.setFormScope = function(scope){
 		this.formScope = scope;
 	}
@@ -892,6 +878,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	};
 })
 .controller('addPosition', function($scope, $http) {
+	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
 	$scope.setFormScope = function(scope){
 		this.formScope = scope;
 	}
@@ -960,6 +947,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	};
 })
 .controller('addVenue', function($scope, $http) {
+	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
 	$scope.setFormScope = function(scope){
 		this.formScope = scope;
 	}
