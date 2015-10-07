@@ -144,15 +144,6 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
         }
       }
     })
-	.state('router.addVenue', {
-      url: "/add-venue",
-	  cache: false,
-      views: {
-        'menuContent' :{
-          templateUrl: "templates/add-venue.html"
-        }
-      }
-    })
 	.state('intro', {
       url: "/intro",
 	  cache: false,
@@ -181,13 +172,6 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 		{ name: 'Exit Only', id: 'Exit' },
 	];
 		
-	$scope.venue = { id: null, venueName: 'New Venue', capacity: 'Exit', eventId: '' },
-	$scope.venues = [
-		{ id: '1', venueName: 'New Venue 1', capacity: '100', eventId: '' },
-		{ id: '2',  venueName: 'New Venue 2', capacity: '50', eventId: ''  },
-		{ id: '3',  venueName: 'New Venue 3', capacity: '20', eventId: '' },
-	];
-
 	$scope.positions = [
 		{ id: '3', positionName: 'New Position 1', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false },
 		{ id: '4', positionName: 'New Position 2', positionFunction: 'Exit', positionType: 'External', icon: 'ion-log-in', entryCount: "0", exitCount: "0", enabled: false  },
@@ -277,10 +261,8 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 		$http.get(urlPrefix + '/rest/events/'+$scope.eventIDD).
 			  then(function(response) {
 				$scope.event= response.data;
-				$scope.areas = [];
-				for(var i =0; i< $scope.event.venues.length; i++){
-					$scope.areas.push.apply($scope.areas, $scope.event.venues[i].areas);
-				}
+				$scope.areas = $scope.event.areas;
+				
 
 				$scope.mainarea = {
 					value:0,
@@ -330,11 +312,8 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 			$http.get(urlPrefix + '/rest/events/'+$scope.eventIDD).
 			  then(function(response) {
 				$scope.event= response.data;
-				$scope.areas = [];
-				for(var i =0; i< $scope.event.venues.length; i++){
-					$scope.areas.push.apply($scope.areas, $scope.event.venues[i].areas);
-				}
-
+				$scope.areas = $scope.event.areas;
+				
 				$scope.mainarea = {
 					value:0,
 					iconBefore:'ion-unlocked',
@@ -869,18 +848,19 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 		this.formScope = scope;
 	}
 	$scope.newarea = {};
-	
+		
 		// Simple GET request example :
-	$http.get(urlPrefix + '/rest/venues').
+	$http.get(urlPrefix + '/rest/events?companyId='+$scope.user.usersCompanyID).
 	  then(function(response) {
-	  	$scope.venues= response.data;
+	  	$scope.events= response.data;
 	    // this callback will be called asynchronously
 	    // when the response is available
 	  }, function(response) {
-	  	alert("Error retrieving venues");
+	  	alert("Error retrieving events");
 	    // called asynchronously if an error occurs
 	    // or server returns response with an error status.
 	  });
+
 	
 	$scope.areaSubmit = function() {
 		if(!$scope.newarea.areaName) {
@@ -891,13 +871,13 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 			alert('Capacity required');
 			return;
 		}
-		if(!$scope.newarea.venueid) {
-			alert('Venue required');
+		if(!$scope.newarea.eventid) {
+			alert('Event required');
 			return;
 		}
 		
 		// Simple POST request example (passing data) :
-		$http.post(urlPrefix + '/rest/areas?areaName='+$scope.newarea.areaName+'&capacity='+$scope.newarea.capacity+'&venueId='+$scope.newarea.venueid).
+		$http.post(urlPrefix + '/rest/areas?areaName='+$scope.newarea.areaName+'&capacity='+$scope.newarea.capacity+'&eventId='+$scope.newarea.eventid).
 		  then(function(response) {
 		  if(response.data.id==0){
 			alert("There was an error creating area, Please try again.");
@@ -916,7 +896,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 		var defaultForm = {
 			areaName: '', 
 			capacity: '',
-			venueid: ''
+			eventid: ''
 		};
 		$scope.newarea = defaultForm;
 	};
@@ -990,71 +970,6 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 		$scope.newposition = defaultForm;
 	};
 })
-.controller('addVenue', function($scope, $http) {
-	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
-	$scope.setFormScope = function(scope){
-		this.formScope = scope;
-	}
-			
-		// Simple GET request example :
-	$http.get(urlPrefix + '/rest/events?companyId='+$scope.user.usersCompanyID).
-	  then(function(response) {
-	  	$scope.events= response.data;
-		
-		for (var i =0; i < $scope.events.length; i++) {
-			$scope.events[i].icon  = "ion-log-in";
-			$scope.events[i].resetEnabled  = false;
-		}
-		
-	    // this callback will be called asynchronously
-	    // when the response is available
-	  }, function(response) {
-	  	alert("Error retrieving events");
-	    // called asynchronously if an error occurs
-	    // or server returns response with an error status.
-	  });
-	
-	
-	$scope.newvenue = {};
-	$scope.venueSubmit = function() {
-		if(!$scope.newvenue.venueName) {
-			alert('Name required');
-			return;
-		}
-		if(!$scope.newvenue.capacity) {
-			alert('Capacity required');
-			return;
-		}
-		if(!$scope.newvenue.eventId) {
-			alert('Event required');
-			return;
-		}
-
-		// Simple POST request example (passing data) :
-		$http.post(urlPrefix + '/rest/venues?venueName='+$scope.newvenue.venueName+'&capacity='+$scope.newvenue.capacity+'&eventId='+$scope.newvenue.eventId).
-		  then(function(response) {
-		  if(response.data.id==0){
-			alert("There was an error creating venue, Please try again.");
-		  }else{
-			alert(response.data.venueName +" Created");
-		  }
-			// this callback will be called asynchronously
-			// when the response is available
-		  }, function(response) {
-			alert("There was an error creating venue, Please try again.");
-			// called asynchronously if an error occurs
-			// or server returns response with an error status.
-		  });
-		
-		this.formScope.addVenueForm.$setPristine();
-		var defaultForm = {
-			capacity : "",
-			eventId : "",
-			venueName : ""
-		};
-		$scope.newvenue = defaultForm;
-	};
-})
 .controller('AttendantController', function($scope, $state, $location, SideMenuSwitcher, $http, $cordovaVibration) {
 	$scope.leftSide = SideMenuSwitcher.leftSide;
 	
@@ -1071,11 +986,11 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 			$scope.attendantposition= response.data;
 			$scope.attendantposition.icon ='ion-log-in';
 			
-			if($scope.attendantposition.positionFunction =='In'){
+			if($scope.attendantposition.positionFunction =='Entry'){
 				$scope.attendantposition.positionFunction = 'Entry Only';
 				$scope.attendantposition.color ='balanced';
 			}
-			if($scope.attendantposition.positionFunction =='Out'){
+			if($scope.attendantposition.positionFunction =='Exit'){
 				$scope.attendantposition.positionFunction = 'Exit Only';
 				$scope.attendantposition.color ='assertive';
 			}
