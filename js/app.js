@@ -1,4 +1,4 @@
-var urlPrefix ='http://localhost:8082/Overlord';
+var urlPrefix ='http://localhost:8080/Overlord';
 
 angular.module('iot', ['ionic','chart.js','ngCordova'])
 
@@ -986,16 +986,11 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 			$scope.attendantposition= response.data;
 			$scope.attendantposition.icon ='ion-log-in';
 			
-			if($scope.attendantposition.positionFunction =='Entry'){
-				$scope.attendantposition.positionFunction = 'Entry Only';
+			if($scope.attendantposition.positionFunction =='Entry Only'){
 				$scope.attendantposition.color ='balanced';
 			}
-			if($scope.attendantposition.positionFunction =='Exit'){
-				$scope.attendantposition.positionFunction = 'Exit Only';
+			if($scope.attendantposition.positionFunction =='Exit Only'){
 				$scope.attendantposition.color ='assertive';
-			}
-			if($scope.attendantposition.positionFunction =='Both'){
-				$scope.attendantposition.positionFunction = 'Entry/Exit';
 			}
 			// this callback will be called asynchronously
 			// when the response is available
