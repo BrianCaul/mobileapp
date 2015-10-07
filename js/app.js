@@ -1,4 +1,4 @@
-var urlPrefix ='http://localhost:8080/Overlord';
+var urlPrefix ='http://localhost:8082/Overlord';
 
 angular.module('iot', ['ionic','chart.js','ngCordova'])
 
@@ -262,7 +262,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	});
 
 })
-.controller('SingleEventCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout, $window, $location, SideMenuSwitcher, $http) {
+.controller('SingleEventCtrl', function($scope, $ionicSideMenuDelegate, $ionicPopover, $state, $timeout, $window, $location, SideMenuSwitcher, $http, $interval) {
 
 	$scope.leftSide = SideMenuSwitcher.leftSide;
 	
@@ -270,9 +270,57 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	$scope.companyId = $scope.user.usersCompanyID;
 	
 		  
-		  if($location.search().eventId){
+	if($location.search().eventId){
 		window.localStorage['eventID'] =$location.search().eventId;
 		$scope.eventIDD = $location.search().eventId;
+		
+		$http.get(urlPrefix + '/rest/events/'+$scope.eventIDD).
+			  then(function(response) {
+				$scope.event= response.data;
+				$scope.areas = [];
+				for(var i =0; i< $scope.event.venues.length; i++){
+					$scope.areas.push.apply($scope.areas, $scope.event.venues[i].areas);
+				}
+
+				$scope.mainarea = {
+					value:0,
+					iconBefore:'ion-unlocked',
+					iconAfter : 'ion-locked',
+					capacity : 0
+				}
+
+				for(var i =0; i< $scope.areas.length; i++){
+					$scope.areas[i].value = 0;
+					$scope.areas[i].iconBefore = 'ion-unlocked';
+					$scope.areas[i].iconAfter = 'ion-locked';
+					for(var x =0; x< $scope.areas[i].positions.length; x++){
+						$scope.areas[i].positions[x].icon ='ion-log-in';
+						if($scope.areas[i].positions[x].positionFunction =='In'){
+							$scope.areas[i].positions[x].color ='balanced';
+							$scope.areas[i].positions[x].positionFunction ='Entry Only';
+						}
+						if($scope.areas[i].positions[x].positionFunction =='Out'){
+							$scope.areas[i].positions[x].color ='assertive';
+							$scope.areas[i].positions[x].positionFunction ='Exit Only';
+						}
+						if($scope.areas[i].positions[x].positionFunction =='Both'){
+							$scope.areas[i].positions[x].positionFunction ='Entry/Exit';
+						}
+
+						$scope.areas[i].value = $scope.areas[i].value + $scope.areas[i].positions[x].numVisitors;
+					}
+
+					$scope.mainarea.value = $scope.mainarea.value + $scope.areas[i].value;
+					$scope.mainarea.capacity = $scope.mainarea.capacity + $scope.areas[i].capacity;
+				}
+				// this callback will be called asynchronously
+				// when the response is available
+			  }, function(response) {
+				alert("Error retrieving event");
+				// called asynchronously if an error occurs
+				// or server returns response with an error status.
+			  });
+		
 	}
 	// Simple GET request example :
 	var timer = undefined;
@@ -352,6 +400,44 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 			// or server returns response with an error status.
 		  });
 	};
+	
+	var maximum = 150;
+	$scope.data = [[]];
+	$scope.labels = [];
+	for (var i = 0; i < maximum; i++) {
+		$scope.data[0].push(0);
+		$scope.labels.push("");
+	}
+	$scope.options =  {
+		responsive: true,
+		showTooltips: false,
+		animation: false,
+		pointDot : false,
+		scaleShowLabels: true,
+		showScale: true,
+		maintainAspectRatio: false,
+		datasetStrokeWidth : 1,
+		datasetFill : true,
+    }; 
+
+    function getLiveChartData () {
+      if ($scope.data[0].length) {
+        $scope.labels = $scope.labels.slice(1);
+        $scope.data[0] = $scope.data[0].slice(1);
+      }
+
+      while ($scope.data[0].length < maximum) {
+        $scope.labels.push('');
+        $scope.data[0].push(getRandomValue($scope.data[0]));
+      }
+    }
+	function getRandomValue (data) {
+		return $scope.mainarea.value;
+	}
+	// Simulate async data update
+	$interval(function () {
+		getLiveChartData();
+	}, 500);
 
 	$scope.$on('$destroy', function() {
 		$scope.popover.remove();
@@ -378,12 +464,6 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	$scope.closeAlerts = function() {
 		$scope.popover.hide();
 	};
-	$scope.$on('$destroy', function() {
-		$scope.popover.remove();
-	});
-	$timeout(function () {
-		ionic.EventController.trigger("resize", "", true, false);
-	}, 1500);
 })
 .controller('Intro', function($scope, $ionicSlideBoxDelegate, $timeout, $ionicLoading, $ionicPopup, $location, $http, $window, $state, SideMenuSwitcher) {
 	$scope.cred={
@@ -468,44 +548,8 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 		});
 	};
 })
-.controller('Dashboard', function($scope, $interval) {
-	var maximum = 150;
-	$scope.data = [[]];
-	$scope.labels = [];
-	for (var i = 0; i < maximum; i++) {
-		$scope.data[0].push(0);
-		$scope.labels.push("");
-	}
-	$scope.options =  {
-		responsive: true,
-		showTooltips: false,
-		animation: false,
-		pointDot : false,
-		scaleShowLabels: true,
-		showScale: true,
-		maintainAspectRatio: false,
-		datasetStrokeWidth : 1,
-		datasetFill : true,
-    }; 
-
-    function getLiveChartData () {
-      if ($scope.data[0].length) {
-        $scope.labels = $scope.labels.slice(1);
-        $scope.data[0] = $scope.data[0].slice(1);
-      }
-
-      while ($scope.data[0].length < maximum) {
-        $scope.labels.push('');
-        $scope.data[0].push(getRandomValue($scope.data[0]));
-      }
-    }
-	function getRandomValue (data) {
-		return $scope.mainarea.value;
-	}
-	// Simulate async data update
-	$interval(function () {
-		getLiveChartData();
-	}, 500);
+.controller('Dashboard', function($scope) {
+	
 })
 .controller('Charts', function($scope, $interval, $http) {
 
@@ -951,15 +995,21 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	$scope.setFormScope = function(scope){
 		this.formScope = scope;
 	}
-	
-	// Simple GET request example :
-	$http.get(urlPrefix + '/rest/events').
+			
+		// Simple GET request example :
+	$http.get(urlPrefix + '/rest/events?companyId='+$scope.user.usersCompanyID).
 	  then(function(response) {
 	  	$scope.events= response.data;
+		
+		for (var i =0; i < $scope.events.length; i++) {
+			$scope.events[i].icon  = "ion-log-in";
+			$scope.events[i].resetEnabled  = false;
+		}
+		
 	    // this callback will be called asynchronously
 	    // when the response is available
 	  }, function(response) {
-	  	alert("Error retriving events");
+	  	alert("Error retrieving events");
 	    // called asynchronously if an error occurs
 	    // or server returns response with an error status.
 	  });
@@ -1099,6 +1149,21 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	$scope.leftSide = SideMenuSwitcher.leftSide;
 	$scope.position = JSON.parse(window.localStorage['position'] || '{}');
 	$scope.user = JSON.parse(window.localStorage['user'] || '{}');
+	
+	$scope.companyId = $scope.user.usersCompanyID;
+		// Simple GET request example :
+		$http.get(urlPrefix + '/rest/companies/'+$scope.companyId).
+		  then(function(response) {
+			$scope.company= response.data;
+			$scope.users = $scope.company.users;
+
+			// this callback will be called asynchronously
+			// when the response is available
+		  }, function(response) {
+			alert("Error retrieving company");
+			// called asynchronously if an error occurs
+			// or server returns response with an error status.
+		  });
 	//Get Users Positions
 	$scope.setFormScope = function(scope){
 		this.formScope = scope;
