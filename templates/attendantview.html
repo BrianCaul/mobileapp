@@ -13,12 +13,12 @@
 					</span>
 				</div>
 				<div class="row"><br/></div>
-				<div class="row">
+				<div ng-hide="attendantposition.positionFunction =='Exit Only'" class="row">
 				  <div class="col col-50 col-offset-25">
 				    <img ng-click="entrySubmit()" class="img-responsive" src="img/text-plus-icon.png"/>
 				  </div>
 				</div>
-				<div class="row">
+				<div ng-hide="attendantposition.positionFunction =='Entry Only'" class="row">
 				  <div class="col col-50 col-offset-25">
 				    <img ng-click="exitSubmit()" class="img-responsive" src="img/text-minus-icon.png"/>
 				  </div>

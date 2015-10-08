@@ -1,4 +1,4 @@
-var urlPrefix ='http://localhost:8080/Overlord';
+var urlPrefix ='http://localhost:8082/Overlord';
 
 angular.module('iot', ['ionic','chart.js','ngCordova'])
 
@@ -168,8 +168,8 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 
 	$scope.positionFunctions = [
 		{ name: 'Entry/Exit', id: 'Entry/Exit' },
-		{ name: 'Entry Only', id: 'Entry' },
-		{ name: 'Exit Only', id: 'Exit' },
+		{ name: 'Entry Only', id: 'Entry Only' },
+		{ name: 'Exit Only', id: 'Exit Only' },
 	];
 		
 	$scope.positions = [
@@ -289,7 +289,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 							$scope.areas[i].positions[x].positionFunction ='Entry/Exit';
 						}
 
-						$scope.areas[i].value = $scope.areas[i].value + $scope.areas[i].positions[x].numVisitors;
+						$scope.areas[i].value = $scope.areas[i].visitors.length;
 					}
 
 					$scope.mainarea.value = $scope.mainarea.value + $scope.areas[i].value;
@@ -339,7 +339,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 							$scope.areas[i].positions[x].positionFunction ='Entry/Exit';
 						}
 
-						$scope.areas[i].value = $scope.areas[i].value + $scope.areas[i].positions[x].numVisitors;
+						$scope.areas[i].value = $scope.areas[i].visitors.length;
 					}
 
 					$scope.mainarea.value = $scope.mainarea.value + $scope.areas[i].value;
@@ -1002,28 +1002,43 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	
 	$scope.entrySubmit = function() {
 	//$cordovaVibration.vibrate(100);
-	if($scope.attendantposition.positionFunction != 'Exit Only'){
-		$scope.attendantposition.numVisitors = $scope.attendantposition.numVisitors +1;
-		
-		$http.post(urlPrefix + '/rest/positions/'+$scope.attendantposition.id+'/enter?numVisitors='+$scope.attendantposition.numVisitors).
-		  then(function(response) {
-			if(response.data !='Entry Successful'){
-				if($scope.attendantposition.numVisitors >0){
-					$scope.attendantposition.numVisitors = $scope.attendantposition.numVisitors -1;
+		if($scope.attendantposition.positionFunction != 'Exit Only'){
+			
+			$http.post(urlPrefix + '/rest/positions/'+$scope.attendantposition.id+'/enter').
+			  then(function(response) {
+				if(response.data !='Entry Successful'){
+					alert(response.data);
+				}else{
+					$http.get(urlPrefix + '/rest/positions/'+$scope.positionId).
+					  then(function(response) {
+						$scope.attendantposition= response.data;
+						$scope.attendantposition.icon ='ion-log-in';
+						
+						if($scope.attendantposition.positionFunction =='Entry Only'){
+							$scope.attendantposition.color ='balanced';
+						}
+						if($scope.attendantposition.positionFunction =='Exit Only'){
+							$scope.attendantposition.color ='assertive';
+						}
+						// this callback will be called asynchronously
+						// when the response is available
+					  }, function(response) {
+						alert("Error retrieving position");
+						// called asynchronously if an error occurs
+						// or server returns response with an error status.
+					  });
 				}
-				alert(response.data);
-			}
-			// this callback will be called asynchronously
-			// when the response is available
-		  }, function(response) {
-			alert("There was an error entering the position, Please try again.");
-			// called asynchronously if an error occurs
-			// or server returns response with an error status.
-		  });
-		  
-	}else{
-		alert("Exit Only");
-	}
+				// this callback will be called asynchronously
+				// when the response is available
+			  }, function(response) {
+				alert("There was an error entering the position, Please try again.");
+				// called asynchronously if an error occurs
+				// or server returns response with an error status.
+			  });
+			  
+		}else{
+			alert("Exit Only");
+		}
 	};
 
 	$scope.exitSubmit = function() {
@@ -1032,12 +1047,29 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	
 		if($scope.attendantposition.numVisitors > 0){
 	
-		$scope.attendantposition.numVisitors = $scope.attendantposition.numVisitors -1;
-				$http.post(urlPrefix + '/rest/positions/'+$scope.attendantposition.id+'/exit?numVisitors='+$scope.attendantposition.numVisitors).
+		$http.post(urlPrefix + '/rest/positions/'+$scope.attendantposition.id+'/exit').
 		  then(function(response) {
 			if(response.data !='Exit Successful'){
-				$scope.attendantposition.numVisitors = $scope.attendantposition.numVisitors +1;
 				alert(response.data);
+			}else{
+				$http.get(urlPrefix + '/rest/positions/'+$scope.positionId).
+					  then(function(response) {
+						$scope.attendantposition= response.data;
+						$scope.attendantposition.icon ='ion-log-in';
+						
+						if($scope.attendantposition.positionFunction =='Entry Only'){
+							$scope.attendantposition.color ='balanced';
+						}
+						if($scope.attendantposition.positionFunction =='Exit Only'){
+							$scope.attendantposition.color ='assertive';
+						}
+						// this callback will be called asynchronously
+						// when the response is available
+					  }, function(response) {
+						alert("Error retrieving position");
+						// called asynchronously if an error occurs
+						// or server returns response with an error status.
+					  });
 			}
 			// this callback will be called asynchronously
 			// when the response is available
