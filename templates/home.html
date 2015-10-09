@@ -33,7 +33,7 @@
 			Area Capacities
 			</div>
 		</div>
-		<div ng-repeat="ar in areas">
+		<div ng-repeat="ar in areas | orderBy:'areaName'">
 			<div class="col-lg-100 padding-horizontal" style="margin-top:10px;">
 				<li class="item">
 					{{ ar.areaName }}
@@ -52,11 +52,11 @@
 							Positions
 							</div>
 						</div>
-						<div ng-repeat="position in ar.positions">
+						<div ng-repeat="position in ar.positions | orderBy:'positionName'">
 							<div class="col-lg-50 padding-horizontal">
 								<div class="item item-icon-left" on-tap="positionTap('router.position', position)">
 									<i class="icon" ng-class="position.icon"></i>
-									{{ position.positionName }} : {{position.numVisitors}}
+									{{ position.positionName }} : {{position.visitors.length}}
 									<span class="item-note" ng-class="position.color">
 									{{ position.positionFunction }}
 									</span>

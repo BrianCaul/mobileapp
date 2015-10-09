@@ -1,4 +1,4 @@
-var urlPrefix ='http://localhost:8082/Overlord';
+var urlPrefix ='http://localhost:8080/Overlord';
 
 angular.module('iot', ['ionic','chart.js','ngCordova'])
 
@@ -450,6 +450,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 		password:''
 	}
 	$scope.login = function() {
+		window.localStorage.clear();
 		$ionicLoading.show({
 		  template: 'Logging in...'
 		});
