@@ -344,12 +344,12 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 
 					$scope.mainarea.value = $scope.mainarea.value + $scope.areas[i].value;
 					$scope.mainarea.capacity = $scope.mainarea.capacity + $scope.areas[i].capacity;
-					timer = $timeout(poll, 5000);
+					timer = $timeout(poll, 7000);
 				}
 				// this callback will be called asynchronously
 				// when the response is available
 			  }, function(response) {
-				timer = $timeout(poll, 5000);
+				timer = $timeout(poll, 7000);
 				alert("Error retrieving event");
 				// called asynchronously if an error occurs
 				// or server returns response with an error status.
@@ -416,7 +416,7 @@ angular.module('iot', ['ionic','chart.js','ngCordova'])
 	// Simulate async data update
 	$interval(function () {
 		getLiveChartData();
-	}, 500);
+	}, 2000);
 
 	$scope.$on('$destroy', function() {
 		$scope.popover.remove();
